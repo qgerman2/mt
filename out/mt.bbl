@@ -1,0 +1,169 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{autopilot-ai}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=e4361518e88efe839547b9545e5e4341}{%
+           family={Nezhad},
+           familyi={N\bibinitperiod},
+           given={Kaveh\bibnamedelima Kakaei},
+           giveni={K\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \strng{namehash}{e4361518e88efe839547b9545e5e4341}
+      \strng{fullhash}{e4361518e88efe839547b9545e5e4341}
+      \strng{bibnamehash}{e4361518e88efe839547b9545e5e4341}
+      \strng{authorbibnamehash}{e4361518e88efe839547b9545e5e4341}
+      \strng{authornamehash}{e4361518e88efe839547b9545e5e4341}
+      \strng{authorfullhash}{e4361518e88efe839547b9545e5e4341}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{How AI Changes Auto Pilot System}
+      \field{urlday}{7}
+      \field{urlmonth}{9}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.linkedin.com/pulse/how-ai-changes-auto-pilot-system-kaveh-kakaei-nezhad-kav-/
+      \endverb
+      \verb{url}
+      \verb https://www.linkedin.com/pulse/how-ai-changes-auto-pilot-system-kaveh-kakaei-nezhad-kav-/
+      \endverb
+    \endentry
+    \entry{fpvtuning}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=7a8a4c5cf379cb08f95f2ece64f7ea01}{%
+           family={Liang},
+           familyi={L\bibinitperiod},
+           given={Oscar},
+           giveni={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{7a8a4c5cf379cb08f95f2ece64f7ea01}
+      \strng{fullhash}{7a8a4c5cf379cb08f95f2ece64f7ea01}
+      \strng{bibnamehash}{7a8a4c5cf379cb08f95f2ece64f7ea01}
+      \strng{authorbibnamehash}{7a8a4c5cf379cb08f95f2ece64f7ea01}
+      \strng{authornamehash}{7a8a4c5cf379cb08f95f2ece64f7ea01}
+      \strng{authorfullhash}{7a8a4c5cf379cb08f95f2ece64f7ea01}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Betaflight FPV Drone Tuning}
+      \field{urlday}{7}
+      \field{urlmonth}{9}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://oscarliang.com/fpv-drone-tuning/
+      \endverb
+      \verb{url}
+      \verb https://oscarliang.com/fpv-drone-tuning/
+      \endverb
+    \endentry
+    \entry{px4-autotuning}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=fc4ecf358b81a7f8feefaca66b0f9aa9}{%
+           family={Pixhawk},
+           familyi={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{fc4ecf358b81a7f8feefaca66b0f9aa9}
+      \strng{fullhash}{fc4ecf358b81a7f8feefaca66b0f9aa9}
+      \strng{bibnamehash}{fc4ecf358b81a7f8feefaca66b0f9aa9}
+      \strng{authorbibnamehash}{fc4ecf358b81a7f8feefaca66b0f9aa9}
+      \strng{authornamehash}{fc4ecf358b81a7f8feefaca66b0f9aa9}
+      \strng{authorfullhash}{fc4ecf358b81a7f8feefaca66b0f9aa9}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Auto-tuning}
+      \field{urlday}{7}
+      \field{urlmonth}{9}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://docs.px4.io/main/en/config/autotune.html
+      \endverb
+      \verb{url}
+      \verb https://docs.px4.io/main/en/config/autotune.html
+      \endverb
+    \endentry
+    \entry{ardupilot-porting}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=1f79341042063f30812f2942a48d19ed}{%
+           family={ArduPilot},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{1f79341042063f30812f2942a48d19ed}
+      \strng{fullhash}{1f79341042063f30812f2942a48d19ed}
+      \strng{bibnamehash}{1f79341042063f30812f2942a48d19ed}
+      \strng{authorbibnamehash}{1f79341042063f30812f2942a48d19ed}
+      \strng{authornamehash}{1f79341042063f30812f2942a48d19ed}
+      \strng{authorfullhash}{1f79341042063f30812f2942a48d19ed}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Porting to a new flight controller board}
+      \field{urlday}{7}
+      \field{urlmonth}{9}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://ardupilot.org/dev/docs/porting.html
+      \endverb
+      \verb{url}
+      \verb https://ardupilot.org/dev/docs/porting.html
+      \endverb
+    \endentry
+    \entry{ardupilot-vs-betaflight-vs-inav}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=eb16f24779f1b23d89ac7cb4515da0fb}{%
+           family={Painless360},
+           familyi={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{eb16f24779f1b23d89ac7cb4515da0fb}
+      \strng{fullhash}{eb16f24779f1b23d89ac7cb4515da0fb}
+      \strng{bibnamehash}{eb16f24779f1b23d89ac7cb4515da0fb}
+      \strng{authorbibnamehash}{eb16f24779f1b23d89ac7cb4515da0fb}
+      \strng{authornamehash}{eb16f24779f1b23d89ac7cb4515da0fb}
+      \strng{authorfullhash}{eb16f24779f1b23d89ac7cb4515da0fb}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Choosing between Betaflight. INAV and Ardupilot: A guide for new builders}
+      \field{urlday}{7}
+      \field{urlmonth}{9}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.youtube.com/watch?v=Y12tAXnGptY
+      \endverb
+      \verb{url}
+      \verb https://www.youtube.com/watch?v=Y12tAXnGptY
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -1,0 +1,10 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{\numberline {1}Definición del problema}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Planteamiento del problema}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objetivos}{3}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Objetivos específicos}{3}{subsection.1.2.1}%
+\contentsline {section}{\numberline {1.3}Condiciones de diseño}{3}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Autopiloto}{3}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}X-Plane}{3}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}Metodología de trabajo}{4}{section.1.4}%
+\contentsline {chapter}{\numberline {A}Carta Gantt}{6}{appendix.Alph1}%

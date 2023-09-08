@@ -1,0 +1,22 @@
+@startgantt
+Project starts 2023-08-21
+language es
+printscale weekly with calendar date zoom 3
+
+-- Entregas --
+[Entrega avance 1] happens at 2023-09-07
+[Entrega avance 2] happens at 2023-10-19
+[Entrega informe patrocinante] happens at 2023-12-06
+
+-- Actividades --
+[Definición de problema y objetivos] starts at D+0 and ends 2023-09-07
+[Análisis y selección de autopiloto] starts at D+14 and lasts 2 weeks
+[Compra de microcontrolador] happens at 2023-09-15
+[Compra de insumos electrónicos para extensión de interfaz] happens at 2023-09-15
+[Extensión de protocolo de comunicación para autopiloto] starts at D+28 and lasts 3 weeks
+[Pruebas de interfaz ArduPilot y Pixhawk con X-Plane en software] starts at D+28 and lasts 3 weeks
+[Redacción de informe 2] starts at 2023-10-09 and ends 2023-10-19
+[Validación de arquitectura] starts at 2023-10-23 and lasts 3 weeks
+[Redacción informe final] starts at 2023-11-13 and ends 2023-12-06
+
+@endgantt
