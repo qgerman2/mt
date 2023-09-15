@@ -8,9 +8,9 @@ Implementación de una arquitectura para validación de controladores de RPAS de
 
 \subsection{Objetivos específicos}
 
-\textbf{1.} Desarrollo de extensión de protocolo de comunicación de X-Plane para controladores autopiloto.
+\textbf{1.} Estudio de algoritmos de control y opciones de personalización disponibles para estos en los software de autopiloto actuales y selección de software autopiloto base.
 
-\textbf{2.} Estudio de algoritmos de control y opciones de personalización disponibles para estos en los software de autopiloto actuales y selección de software autopiloto base.
+\textbf{2.} Desarrollo de extensión de protocolo de comunicación de X-Plane para controladores autopiloto.
 
 \textbf{3.} Implementación de nuevos algoritmos de control y validación en simulador X-Plane como prototipo de arquitectura.
 
@@ -34,7 +34,12 @@ El autopiloto base debe ser uno de los que ya se tenga experiencia en el laborat
 
 \subsection{Extensión de protocolo}
 
-Con el autopiloto base seleccionado, se debe proceder a replicar las interfaces de hardware estandarizadas para simular la experiencia de un RPAS real, donde X-Plane junto al protocolo de comunicación la emularan. Los datasheets de los sensores disponibles serán utilizados para replicar las señales que estos entregan al controlador de acuerdo a su capacidad o precisión. Se estudiaran los factores adversos que pudiesen ocurrir afectando la radiofrecuencia de control debido al clima o distancias para también hacer una estimación de ellos. Todo esto se implementará en el software inoFS \cite{inofs} en su programación. Para la interfaz de hardware se conectará a la Raspberry Pi Pico un bus de comunicación de acuerdo al estándar de autopiloto \cite{px4-bus}, sea uno proporcionado por el laboratorio o replicado con los insumos electrónicos que se deban comprar.
+Con el autopiloto base seleccionado, se debe proceder a replicar las interfaces de hardware estandarizadas para simular la experiencia de un RPAS real, donde X-Plane junto al protocolo de comunicación la emularan. Los datasheets de los sensores disponibles serán utilizados para replicar las señales que estos entregan al controlador de acuerdo a su capacidad o precisión. Se estudiaran los factores adversos que pudiesen ocurrir afectando la radiofrecuencia de control debido al clima o distancias para también hacer una estimación de ellos. Todo esto se implementará en el software inoFS \cite{inofs} en su programación. Para la interfaz de hardware se conectará a la Raspberry Pi Pico un bus de comunicación de acuerdo al estándar de autopiloto \cite{px4-bus}, sea uno proporcionado por el laboratorio o replicado con los insumos electrónicos que se deban comprar. Para que este objetivo pueda ser logrado no hace falta modificar el código del autopiloto, si los algoritmos PID logran funcionar con simulaciones de X-Plane es suficiente.
 
 \subsection{Prototipo de implementación de nuevos algoritmos}
 
+Ya sea a partir de esfuerzos previos realizados por la comunidad o el estudio del código fuente del autopiloto base se implementara otro sistema de control que se ejecute en el microcontrolador con el software de autopiloto. Al existir la extensión de protocolo probada con PID el funcionamiento del nuevo prototipo de controlador podrá ser verificado en X-Plane de la misma manera. El desarrollo del nuevo algoritmo será a partir de sistemas creados en Simulink y Python, donde el código final será exportado a C o C++ para su integración en el microcontrolador de autopiloto. El objetivo se considerará listo cuando se demuestre que el nuevo algoritmo logra cumplir tareas básicas como estabilización o el ajuste autónomo de las condiciones de vuelo a otras condiciones preestablecidas.
+
+\subsection{Formulación de metodología para implementación de algoritmos}
+
+Durante el desarrollo del prototipo probablemente se habrán intentado varias alternativas para lograr el funcionamiento adecuado, el último objetivo es preparar una metodología junto a documentación que defina el camino seguido para la implementación de nuevos algoritmos en microcontroladores con software de autopiloto. Se reducirá el procedimiento a los pasos mínimos esenciales en documentación web del repositorio de inoFS, además de lo reportado en el informe de memoria de título. La metodología abarcará desde la creación de un algoritmo sencillo hasta su verificación en X-Plane.

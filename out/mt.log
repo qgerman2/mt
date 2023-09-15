@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.16.0 (TeX Live 2023)  (format=lualatex 2023.6.12)  15 SEP 2023 11:44
+This is LuaHBTeX, Version 1.16.0 (TeX Live 2023)  (format=lualatex 2023.6.12)  15 SEP 2023 12:03
  restricted system commands enabled.
  file:line:error style messages enabled.
 **c:/Users/asd/Documents/repos/mt/mt.tex
@@ -1104,7 +1104,7 @@ Overfull \hbox (5.76721pt too wide) in paragraph at lines 58--58
 
 ]
 Apéndice A.
-<img/gantt.png, id=104, 1471.4975pt x 314.17375pt>
+<img/gantt.png, id=106, 1471.4975pt x 314.17375pt>
 File: img/gantt.png Graphic file (type png)
 <use img/gantt.png>
 Package luatex.def Info: img/gantt.png  used on input line 62.
@@ -1122,19 +1122,19 @@ Package logreq Info: Writing requests to 'mt.run.xml'.
 )
 
 Here is how much of LuaTeX's memory you used:
- 32479 strings out of 478285
+ 32481 strings out of 478285
  125086,1977958 words of node,token memory allocated
  612 words of node memory still in use:
    4 hlist, 1 vlist, 1 rule, 4 glue, 3 kern, 1 glyph, 25 attribute, 62 glue_spec, 14 attribute_list, 2 write, 8 pdf_action nodes
-   avail lists: 2:794,3:340,4:48,5:106,6:47,7:8746,8:92,9:225,10:19,11:1268
- 51550 multiletter control sequences out of 65536+600000
+   avail lists: 2:794,3:340,4:48,5:114,6:48,7:8956,8:92,9:225,10:20,11:1301
+ 51551 multiletter control sequences out of 65536+600000
  46 fonts using 4352231 bytes
  105i,8n,109p,1328b,1851s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2023/texmf-dist/fonts/opentype/public/lm/lmmono10-regular.otf><c:/texlive/2023/texmf-dist/fonts/opentype/sorkin/gelasio/Gelasio-Italic.otf><c:/texlive/2023/texmf-dist/fonts/opentype/sorkin/gelasio/Gelasio-Regular.otf><c:/texlive/2023/texmf-dist/fonts/opentype/sorkin/gelasio/Gelasio-Bold.otf>
-Output written on mt.pdf (7 pages, 101300 bytes).
+Output written on mt.pdf (7 pages, 103675 bytes).
 
-PDF statistics: 169 PDF objects out of 1000 (max. 8388607)
- 141 compressed objects within 2 object streams
- 29 named destinations out of 1000 (max. 131072)
- 96 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 174 PDF objects out of 1000 (max. 8388607)
+ 146 compressed objects within 2 object streams
+ 30 named destinations out of 1000 (max. 131072)
+ 104 words of extra memory for PDF output out of 10000 (max. 100000000)
 

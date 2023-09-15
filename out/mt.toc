@@ -8,4 +8,5 @@
 \contentsline {subsection}{\numberline {1.4.1}Selección de autopiloto base}{3}{subsection.1.4.1}%
 \contentsline {subsection}{\numberline {1.4.2}Extensión de protocolo}{4}{subsection.1.4.2}%
 \contentsline {subsection}{\numberline {1.4.3}Prototipo de implementación de nuevos algoritmos}{4}{subsection.1.4.3}%
+\contentsline {subsection}{\numberline {1.4.4}Formulación de metodología para implementación de algoritmos}{4}{subsection.1.4.4}%
 \contentsline {chapter}{\numberline {A}Carta Gantt}{6}{appendix.Alph1}%
