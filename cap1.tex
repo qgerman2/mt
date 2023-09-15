@@ -1,47 +1,40 @@
 \chapter{Definición del problema}
 \section{Planteamiento del problema}
-Pilotar una aeronave no es fácil, tanto para aeronaves tripuladas como no tripuladas es necesario tener cierto entrenamiento y demostrar la habilidad para operar de manera correcta. Debido principalmente al riesgo de que cualquier accidente es muy posiblemente catastrófico y el costo es de vidas o económico. De todas formas en las aeronaves modernas se cuentan con sistemas de piloto asistido que van desde ayudas para la  estabilización hasta completos autopilotos que ejecutan una misión desde el despegue hasta el aterrizaje \cite{autopilot-ai}, por lo que el uso apropiado reduce significativamente el riesgo de accidentes por error humano.
+Los software controlador de RPAS mantenidos actualmente como ArduPilot o Pixhawk incluyen sistemas de autopiloto generalmente a base de algoritmos PID, los detalles de la implementación del controlador están documentados \cite{px4-control-diagram} permitiendo que un usuario experimentado pueda ajustar los parámetros en busca de un mejsor desempeño, \emph{quizás se quiera lograr un vuelo más estable si se está pilotando manualmente \cite{betaflight-pid-tuning}, o en misiones autónomas reducir el consumo de las baterías, maximizar la distancia a recorrer o reducir el tiempo que una misión pueda tomar}. Otra manera de lograr estos objetivos puede ser reemplazando por completo el algoritmo PID por controladores basados en modelos dinámicos como lo son LGR y LQR. Si bien estos tipos de controlador han sido probados \cite{yt-lqr} no existe una arquitectura definitiva que permita el prototipado rápido y la validación de estos sistemas.
 
-Para funcionar correctamente los sistemas de autopiloto necesitan conocer parámetros físicos de la aeronave que permitan predecir el movimiento en respuesta a cierto control de entrada \cite{fpvtuning}, para RPAS esta caracterización se puede realizar automáticamente en vuelo \cite{px4-autotuning}. Por ejemplo los drones o cuadricópteros primero permanecen quietos en el aire y desde ese equilibrio alteran de varias formas la velocidad de las hélices, registrando las respuestas obtenidas. Para RPAS de ala fija es similar aunque más complicado, estas aeronaves pueden alcanzar un vuelo recto y nivelado, pero deben avanzar para mantener la sustentación y cada alteración por más pequeña que sea puede traducirse en un gran desplazamiento poniendo en riesgo la aeronave.
+\section{Objetivo}
 
-Una posible solución para mitigar este riesgo de pilotear un RPAS de ala fija sin un controlador previamente calibrado puede ser realizar la caracterización dentro de un entorno de simulación. Si se cuenta y ejecuta algún procedimiento para crear un modelo lo suficientemente realista de la aeronave (con información obtenida en pruebas estáticas o de vuelo manual), es posible realizar una simulación y esta conectarla al software de autopiloto para que realice la calibración. Esta primera aproximación sería suficiente para comenzar las pruebas con autopiloto y permitir posterior refinamiento en vuelo.
-
-El objetivo de esta memoria de título es implementar una arquitectura que haga de interfaz entre software de autopiloto y el simulador de vuelo X-Plane para que, contando con el modelo de la aeronave adecuado, se pueda realizar la caracterización.
-
-\section{Objetivos}
-
-Desarrollar una arquitectura capaz de comunicación bidireccional con X-Plane para la evaluación de diferentes controladores de vuelo automáticos en RPAS de ala fija, basándose en el uso de microcontroladores.
+Implementación de una arquitectura para validación de controladores de RPAS de ala fija en X-Plane
 
 \subsection{Objetivos específicos}
 
-\textbf{1.} Análisis y comparación de las capacidades de autopiloto y calibración en los software utilizados en controladores de vuelo actuales.
+\textbf{1.} Desarrollo de extensión de protocolo de comunicación de X-Plane para controladores autopiloto.
 
-\textbf{2.} Selección de firmware de acuerdo al análisis realizado y las necesidades.
+\textbf{2.} Estudio de algoritmos de control y opciones de personalización disponibles para estos en los software de autopiloto actuales y selección de software autopiloto base.
 
-\textbf{3.} Preparación del protocolo de comunicación con X-Plane para ser compatible con controladores de vuelo y sus interfaces estándar.
+\textbf{3.} Implementación de nuevos algoritmos de control y validación en simulador X-Plane como prototipo de arquitectura.
 
-\textbf{4.} Diseño y ejecución de pruebas de validación de la arquitectura en simulador con modelos existentes.
-
-\textbf{5.} Redacción de informe final.
+\textbf{4.} Establecer y documentar proceso sistemático para la implementación de algoritmos de control en la nueva arquitectura.
 
 \section{Condiciones de diseño}
 
-La fidelidad del sistema interfaz autopiloto con X-Plane en comparación a un controlador funcionando en una aeronave real debe ser tan alta como lo sea el modelo utilizado. Si se tiene un modelo idéntico al de un RPAS disponible en el laboratorio con el que realizar pruebas, los resultados de la calibración deben ser los mismos.
+Al tratarse de un trabajo para el laboratorio de técnicas aeroespaciales, es de especial interés que la arquitectura pueda ser utilizada para proyectos a futuro por otros alumnos de la facultad. El desarrollo de la extensión del protocolo de comunicación con X-Plane para controladores autopiloto debe habilitar una interfaz que emule el de una RPAS real. En términos de conexiones de hardware, X-Plane debe proporcionar lecturas de sensores y entradas de control por radio tal cual como se realizarían con un RPAS disponible en el laboratorio. Esto permitirá dar una introducción en ambiente simulado a la plataforma con una clara continuación al trabajo con RPAS reales.
 
-\subsection{Autopiloto}
+Por lo general los software de autopiloto cuentan con un solo tipo de algoritmo de control para cada lazo y aunque ofrezcan opciones para activar o desactivar ciertas asistencias \cite{ardupilot-flight-modes}, o el ajuste de parámetros internos \cite{ardupilot-plane-tuning} no tienen forma de cambiar por completo el algoritmo de control. Esta puede ser una decisión de diseño más que una limitación, ya que los lazos PID han demostrado ser suficientes para los requerimientos de la plataforma y dar soporte para más alternativas es trabajo extra. Los controladores de vuelo incluyen más funciones que solo las asistencias y autopiloto, la recopilación de información de los sensores y posterior filtrado no es un problema trivial y en ArduPilot ha pasado por varias iteraciones \cite{ardupilot-ekf}. El software de estación en tierra habilita una interfaz gráfica que permite monitorear el vuelo y crear una ruta para la misión \cite{ardupilot-gs}, entre otras cosas. El diseñar la arquitectura alrededor de software como ArduPilot o Pixhawk permite aprovechar todas las funciones existentes y no tener que re implementarlas cuando se quiera probar un algoritmo de control nuevo en un RPAS real.
 
-Los controladores de autopiloto actuales en su mayoría están diseñados para trabajar con la familia de microcontroladores STM32 \cite{ardupilot-porting}, por lo que es este el microcontrolador en el que se desarrollara la interfaz. Esto habilita el uso de firmware como ArduPilot y PixHawk que son los más populares en RPAS.
-
-\subsection{X-Plane}
-
-El controlador autopiloto se debe conectar a X-Plane por la misma interfaz con la que lo haría en un RPAS, estas conexiones están estandarizadas por lo que se debe extender el protocolo de comunicación para entregar datos de la forma que el autopiloto los espera. Estos pueden ser lecturas de los sensores y los comandos de control del piloto. Los modelos de aeronave a utilizar serán los existentes proporcionados por el simulador puesto que estos son creados por los desarrolladores que aseguran que el comportamiento es comparable al de una aeronave real.
+Un algoritmo podrá ser validado en el software de simulación X-Plane como primera iteración, en este se podrá probar la interfaz entre el controlador de vuelo y X-Plane, la capacidad de sintonizar el algoritmo a aeronaves específicas y la realización de misiones autónomas. Esto será parte de un proceso sistemático con instrucciones con el objetivo final de que los algoritmos puedan ser probados en RPAS reales. El procedimiento de diseño de controladores fomentará la experimentación con base en herramientas ya utilizadas en el laboratorio como lo son Simulink o Python. Con especial enfoque en RPAS de ala fija.
 
 \section{Metodología de trabajo}
 
-Primero se debe realizar un análisis de los controladores de autopiloto utilizados actualmente y de sus capacidades para trabajar con RPAS de ala fija. Las diferencias entre controladores son de capacidades macro como solo ofrecer control de estabilización y nada más, o entregar una solución completamente autónoma. A más profundidad el software puede ofrecer las mismas capacidades de control, pero implementadas con algoritmos diferentes \cite{ardupilot-vs-betaflight-vs-inav}, por lo que la selección de uno o varios controladores es importante de acuerdo a los objetivos que se quieran alcanzar y el rendimiento que pudiesen tener uno en comparación a otro. Además del rendimiento están los criterios de las interfaces con las que se comunican con la aeronave y si estas son estandarizadas, y que tan utilizado es el controlador en la práctica.
+\subsection{Selección de autopiloto base}
 
-Seleccionados los controladores se debe extender el protocolo de comunicación para ser compatible con estos, el protocolo funciona con un microcontrolador Raspberry Pi Pico el cual emulara y entregara las salidas que se esperarían de un sensor con ruido además de los comandos de control del piloto. Esta nueva interfaz será construida para ser compatible con los estándares de los controladores seleccionados.
+Los sistemas de autopiloto cuentan con interfaces estandarizadas para conectar sensores y entradas de radiocontrol. Es imperativo seleccionar una base que cuente con estos estándares definidos para la posterior implementación del hardware.
 
-La validación de que el sistema funciona correctamente se realizara utilizando modelos existentes en el software de simulación verificando que el autopiloto los pueda controlar exitosamente. Los modelos desarrollados por profesionales ofrecen cierta garantía de que se comportan como aeronaves reales.
+El autopiloto base debe ser uno de los que ya se tenga experiencia en el laboratorio como Pixhawk o ArduPilot, y será provechoso si ya existen esfuerzos por agregar la capacidad de algoritmos personalizados a alguno de estos lo que reduciría trabajo. Una solución que se acerca a esta visión es la de recompilar ArduPilot junto con código exportado de Simulink para la implementación de nuevos controladores \cite{ardupilot-custom}.
 
-Finalmente, la redacción del informe abarcará el desarrollo y el uso del sistema para poder ser aplicado en el desarrollo de nuevos modelos de aeronaves no caracterizadas.
+\subsection{Extensión de protocolo}
+
+Con el autopiloto base seleccionado, se debe proceder a replicar las interfaces de hardware estandarizadas para simular la experiencia de un RPAS real, donde X-Plane junto al protocolo de comunicación la emularan. Los datasheets de los sensores disponibles serán utilizados para replicar las señales que estos entregan al controlador de acuerdo a su capacidad o precisión. Se estudiaran los factores adversos que pudiesen ocurrir afectando la radiofrecuencia de control debido al clima o distancias para también hacer una estimación de ellos. Todo esto se implementará en el software inoFS \cite{inofs} en su programación. Para la interfaz de hardware se conectará a la Raspberry Pi Pico un bus de comunicación de acuerdo al estándar de autopiloto \cite{px4-bus}, sea uno proporcionado por el laboratorio o replicado con los insumos electrónicos que se deban comprar.
+
+\subsection{Prototipo de implementación de nuevos algoritmos}
+

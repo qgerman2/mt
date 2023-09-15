@@ -2361,11 +2361,16 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">refs.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1" intorder="1">autopilot-ai</bcf:citekey>
-    <bcf:citekey order="2" intorder="1">fpvtuning</bcf:citekey>
-    <bcf:citekey order="3" intorder="1">px4-autotuning</bcf:citekey>
-    <bcf:citekey order="4" intorder="1">ardupilot-porting</bcf:citekey>
-    <bcf:citekey order="5" intorder="1">ardupilot-vs-betaflight-vs-inav</bcf:citekey>
+    <bcf:citekey order="1" intorder="1">px4-control-diagram</bcf:citekey>
+    <bcf:citekey order="2" intorder="1">betaflight-pid-tuning</bcf:citekey>
+    <bcf:citekey order="3" intorder="1">yt-lqr</bcf:citekey>
+    <bcf:citekey order="4" intorder="1">ardupilot-flight-modes</bcf:citekey>
+    <bcf:citekey order="5" intorder="1">ardupilot-plane-tuning</bcf:citekey>
+    <bcf:citekey order="6" intorder="1">ardupilot-ekf</bcf:citekey>
+    <bcf:citekey order="7" intorder="1">ardupilot-gs</bcf:citekey>
+    <bcf:citekey order="8" intorder="1">ardupilot-custom</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">inofs</bcf:citekey>
+    <bcf:citekey order="10" intorder="1">px4-bus</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

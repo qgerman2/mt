@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.16.0 (TeX Live 2023)  (format=lualatex 2023.6.12)  7 SEP 2023 23:52
+This is LuaHBTeX, Version 1.16.0 (TeX Live 2023)  (format=lualatex 2023.6.12)  15 SEP 2023 11:44
  restricted system commands enabled.
  file:line:error style messages enabled.
 **c:/Users/asd/Documents/repos/mt/mt.tex
@@ -1087,21 +1087,24 @@ LaTeX Font Info:    Font shape `TU/Gelasio(0)/m/n' will be
 (Font)              scaled to size 14.4pt on input line 2.
 LaTeX Font Info:    Font shape `TU/Gelasio(0)/b/n' will be
 (Font)              scaled to size 14.4pt on input line 2.
+LaTeX Font Info:    Font shape `TU/Gelasio(0)/m/it' will be
+(Font)              scaled to size 10.0pt on input line 3.
+LaTeX Font Info:    Font shape `TU/Gelasio(0)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 9.
+LaTeX Font Info:    Font shape `TU/Gelasio(0)/b/n' will be
+(Font)              scaled to size 12.0pt on input line 9.
 [2
 
-]
-LaTeX Font Info:    Font shape `TU/Gelasio(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 15.
-LaTeX Font Info:    Font shape `TU/Gelasio(0)/b/n' will be
-(Font)              scaled to size 12.0pt on input line 15.
- [3]) [4]
-LaTeX Font Info:    Font shape `TU/Gelasio(0)/m/it' will be
-(Font)              scaled to size 10.0pt on input line 57.
- [5
+] [3]) [4]
+Overfull \hbox (5.76721pt too wide) in paragraph at lines 58--58
+[]\TU/Gelasio(0)/m/n/10 Pixhawk. \TU/Gelasio(0)/m/it/10 Au-to-pi-lot Bus & Ca-rriers\TU/Gelasio(0)/m/n/10 . URL: []$\TU/lmtt/m/n/10 https : / / docs . px4 . io / main / en / flight _ controller /
+ []
+
+[5
 
 ]
 Apéndice A.
-<img/gantt.png, id=82, 1471.4975pt x 314.17375pt>
+<img/gantt.png, id=104, 1471.4975pt x 314.17375pt>
 File: img/gantt.png Graphic file (type png)
 <use img/gantt.png>
 Package luatex.def Info: img/gantt.png  used on input line 62.
@@ -1119,19 +1122,19 @@ Package logreq Info: Writing requests to 'mt.run.xml'.
 )
 
 Here is how much of LuaTeX's memory you used:
- 32457 strings out of 478285
+ 32479 strings out of 478285
  125086,1977958 words of node,token memory allocated
- 552 words of node memory still in use:
-   4 hlist, 1 vlist, 1 rule, 4 glue, 3 kern, 1 glyph, 15 attribute, 62 glue_spec, 9 attribute_list, 2 write, 3 pdf_action nodes
-   avail lists: 1:1,2:428,3:177,4:40,5:97,6:41,7:6008,8:89,9:227,10:14,11:921
- 51534 multiletter control sequences out of 65536+600000
+ 612 words of node memory still in use:
+   4 hlist, 1 vlist, 1 rule, 4 glue, 3 kern, 1 glyph, 25 attribute, 62 glue_spec, 14 attribute_list, 2 write, 8 pdf_action nodes
+   avail lists: 2:794,3:340,4:48,5:106,6:47,7:8746,8:92,9:225,10:19,11:1268
+ 51550 multiletter control sequences out of 65536+600000
  46 fonts using 4352231 bytes
- 105i,8n,109p,990b,1851s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 105i,8n,109p,1328b,1851s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2023/texmf-dist/fonts/opentype/public/lm/lmmono10-regular.otf><c:/texlive/2023/texmf-dist/fonts/opentype/sorkin/gelasio/Gelasio-Italic.otf><c:/texlive/2023/texmf-dist/fonts/opentype/sorkin/gelasio/Gelasio-Regular.otf><c:/texlive/2023/texmf-dist/fonts/opentype/sorkin/gelasio/Gelasio-Bold.otf>
-Output written on mt.pdf (7 pages, 96561 bytes).
+Output written on mt.pdf (7 pages, 101300 bytes).
 
-PDF statistics: 144 PDF objects out of 1000 (max. 8388607)
- 116 compressed objects within 2 object streams
- 23 named destinations out of 1000 (max. 131072)
- 88 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 169 PDF objects out of 1000 (max. 8388607)
+ 141 compressed objects within 2 object streams
+ 29 named destinations out of 1000 (max. 131072)
+ 96 words of extra memory for PDF output out of 10000 (max. 100000000)
 
