@@ -429,6 +429,8 @@ INPUT ./out/mt.toc
 OUTPUT out/mt.toc
 INPUT ./cap1.tex
 INPUT ./cap1.tex
+INPUT ./cap2.tex
+INPUT ./cap2.tex
 INPUT C:/texlive/2023/texmf-var/luatex-cache/generic/fonts/otl/lmmono10-regular.luc
 INPUT ./img/gantt.png
 INPUT ./img/gantt.png

@@ -1,10 +1,18 @@
 \chapter{Definición del problema}
+
+\section{Contexto}
+
+discusión sobre la utilidad de RPAs autónomos y luego hablar sobre los tipos de controladores
+
 \section{Planteamiento del problema}
-Los software controlador de RPAS mantenidos actualmente como ArduPilot o Pixhawk incluyen sistemas de autopiloto generalmente a base de algoritmos PID, los detalles de la implementación del controlador están documentados \cite{px4-control-diagram} permitiendo que un usuario experimentado pueda ajustar los parámetros en busca de un mejsor desempeño, \emph{quizás se quiera lograr un vuelo más estable si se está pilotando manualmente \cite{betaflight-pid-tuning}, o en misiones autónomas reducir el consumo de las baterías, maximizar la distancia a recorrer o reducir el tiempo que una misión pueda tomar}. Otra manera de lograr estos objetivos puede ser reemplazando por completo el algoritmo PID por controladores basados en modelos dinámicos como lo son LGR y LQR. Si bien estos tipos de controlador han sido probados \cite{yt-lqr} no existe una arquitectura definitiva que permita el prototipado rápido y la validación de estos sistemas.
+
+Los software controlador de RPAS mantenidos actualmente como ArduPilot o Pixhawk incluyen sistemas de autopiloto y vuelo asistido generalmente a base de algoritmos PID. En algunos casos como con Pixhawk los detalles de implementación del controlador están documentados \cite{px4-control-diagram}, permitiendo que un usuario experimentado pueda ajustar los parámetros en busca de un mejor desempeño. \emph{Quizás se quiera lograr un vuelo más estable si se está pilotando manualmente \cite{betaflight-pid-tuning}, o en misiones autónomas reducir el consumo de las baterías, maximizar la distancia a recorrer o reducir el tiempo que una misión pueda tomar}. Otra manera de lograr estos objetivos puede ser reemplazando por completo el algoritmo PID por controladores basados en modelos dinámicos como lo son LGR y LQR. Si bien estos tipos de controlador han sido probados \cite{yt-lqr} no existe una arquitectura accesible que permita el prototipado rápido y la validación de estos sistemas.
+
+Los PID no son optimos citar, implementar un nuevo algoritmo es peligroso en vuelo no citar
 
 \section{Objetivo}
 
-Implementación de una arquitectura para validación de controladores de RPAS de ala fija en X-Plane
+Implementación de una arquitectura para validación de nuevos algoritmos de control en microcontroladores para aeronaves de ala fija por medio de simulación hardware-in-the-loop con X-Plane.
 
 \subsection{Objetivos específicos}
 
@@ -12,7 +20,7 @@ Implementación de una arquitectura para validación de controladores de RPAS de
 
 \textbf{2.} Desarrollo de extensión de protocolo de comunicación de X-Plane para controladores autopiloto.
 
-\textbf{3.} Implementación de nuevos algoritmos de control y validación en simulador X-Plane como prototipo de arquitectura.
+\textbf{3.} Implementación de distintos algoritmos de control a los ya implementados en el software y validación en simulador X-Plane como prototipo de arquitectura.
 
 \textbf{4.} Establecer y documentar proceso sistemático para la implementación de algoritmos de control en la nueva arquitectura.
 
