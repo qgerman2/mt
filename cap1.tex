@@ -26,9 +26,16 @@ Implementación de una arquitectura para validación de nuevos algoritmos de con
 
 \section{Condiciones de diseño}
 
-Al tratarse de un trabajo para el laboratorio de técnicas aeroespaciales, es de especial interés que la arquitectura pueda ser utilizada para proyectos a futuro por otros alumnos de la facultad. El desarrollo de la extensión del protocolo de comunicación con X-Plane para controladores autopiloto debe habilitar una interfaz que emule el de una aeronave real. En términos de conexiones de hardware, X-Plane debe proporcionar lecturas de sensores y entradas de control de radio por medio de un microcontrolador autopiloto tal cual como se realizarían con una aeronave disponible en el laboratorio. Esta técnica de desarrollo se conoce como ``Hardware-in-the-loop'' y permitirá que el trabajo realizado en simulaciones pueda ser aplicado en aeronaves reales.
+Al tratarse de un trabajo para el laboratorio de técnicas aeroespaciales, es de especial interés que la arquitectura sea accesible para alumnos y docentes en la facultad y el actual informe debe poder servir de documentación. Para estructurar la presentación del proyecto este se puede dividir en dos partes, el entorno de desarrollo que servirá como base para la investigación en X-Plane con un autopiloto, y el estudio de diseño de algoritmos de control.
 
-Por lo general los software de autopiloto cuentan con un solo tipo de algoritmo de control para cada lazo y aunque ofrezcan opciones para activar o desactivar ciertas asistencias \cite{ardupilot-flight-modes}, o el ajuste de parámetros internos \cite{ardupilot-plane-tuning} no tienen forma de cambiar por completo el algoritmo de control. Esta puede ser una decisión de diseño más que una limitación, ya que los lazos PID han demostrado ser suficientes para los requerimientos de la plataforma y dar soporte para más alternativas es trabajo extra. Los controladores de vuelo incluyen más funciones que solo las asistencias y autopiloto, la recopilación de información de los sensores y posterior filtrado no es un problema trivial y en ArduPilot ha pasado por varias iteraciones \cite{ardupilot-ekf}. El software de estación en tierra habilita una interfaz gráfica que permite monitorear el vuelo y crear una ruta para la misión \cite{ardupilot-gs}, entre otras cosas. El diseñar la arquitectura alrededor de software como ArduPilot o Pixhawk permite aprovechar todas las funciones existentes y no tener que re implementarlas cuando se quiera probar un algoritmo de control nuevo en una aeronave real.
+\subsection{Entorno de desarrollo}
+
+El entorno de desarrollo debe ser construido como una extensión del protocolo de comunicación con X-Plane establecido en el proyecto de ingeniería [CITA], habilitando una interfaz a microcontroladores con software autopiloto donde X-Plane emule las funciones que haría una aeronave real. X-Plane debe proporcionar lecturas de sensores simulados y responder apropiadamente a entradas de control de radio lo cual es una técnica conocida como ``Hardware-in-the-loop''. Esta técnica facilita que el trabajo realizado en simulación pueda ser aplicado en aeronaves reales, puesto que para el controlador autopiloto no existirá diferencia entre estar conectado a X-Plane o funcionando en una aeronave real. Los autopilotos además se conectan a un software de estación en tierra que habilita una interfaz gráfica que permite monitorear el vuelo y crear una ruta para la misión \cite{ardupilot-gs}, entre otras cosas. El diseñar la arquitectura alrededor de software como ArduPilot o Pixhawk permite aprovechar todas estas funciones existentes. Los sistemas de autopiloto cuentan con interfaces estandarizadas para conectar sensores y entradas de radiocontrol. Es imperativo seleccionar una base que cuente con estos estándares definidos para la posterior implementación del hardware. El autopiloto base debe ser uno de los que ya se tenga experiencia en el laboratorio como Pixhawk o ArduPilot.
+
+\subsection{Diseño de algoritmos de control}
+
+[ARREGLAR]
+matlab y simulink
 
 Un algoritmo podrá ser validado en el software de simulación X-Plane como primera iteración, en este se podrá probar la interfaz entre el controlador de vuelo y X-Plane, la capacidad de sintonizar el algoritmo a aeronaves específicas y la realización de misiones autónomas. Esto será parte de un proceso sistemático con instrucciones con el objetivo final de que los algoritmos puedan ser probados en aeronaves reales. El procedimiento de diseño de controladores fomentará la experimentación con base en herramientas ya utilizadas en el laboratorio como lo son Simulink o Python. Con especial enfoque en aeronaves de ala fija.
 
@@ -36,9 +43,7 @@ Un algoritmo podrá ser validado en el software de simulación X-Plane como prim
 
 \subsection{Selección de autopiloto base}
 
-Los sistemas de autopiloto cuentan con interfaces estandarizadas para conectar sensores y entradas de radiocontrol. Es imperativo seleccionar una base que cuente con estos estándares definidos para la posterior implementación del hardware.
-
-El autopiloto base debe ser uno de los que ya se tenga experiencia en el laboratorio como Pixhawk o ArduPilot, y será provechoso si ya existen esfuerzos por agregar la capacidad de algoritmos personalizados a alguno de estos lo que reduciría trabajo. Una solución que se acerca a esta visión es la de recompilar ArduPilot junto con código exportado de Simulink para la implementación de nuevos controladores \cite{ardupilot-custom}.
+A partir de las condiciones de diseño establecidas se realizará una comparación entre las soluciones de autopiloto existentes. Además se investigarán trabajos ya realizados que hayan tenido objetivos similares a los de este proyecto, en especial el de modificar e implementar algoritmos de control puesto que en mi opinión es la parte más difícil.
 
 \subsection{Extensión de protocolo}
 
