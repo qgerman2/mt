@@ -1,36 +1,36 @@
+% Formato del documento
 \documentclass{report}
+\usepackage{polyglossia}
+\setdefaultlanguage{spanish}
 \usepackage[letterpaper, margin=3cm]{geometry}
 \usepackage{gelasio}
-\usepackage[spanish]{babel}
 \usepackage{parskip}
 \usepackage{setspace}
 \onehalfspacing
 \usepackage[hidelinks]{hyperref}
+
+% Figuras
 \usepackage{graphicx}
+\usepackage{svg}
 \graphicspath{{./img/}}
-\usepackage[export]{adjustbox}
-\usepackage{etoolbox}
-\expandafter\patchcmd\csname Gin@ii\endcsname
-  {\setkeys {Gin}{#1}}
-  {%
-    \setkeys {Gin}
-      {max height=.3\textwidth,keepaspectratio,#1}%
-  }
-  {}{}
+\svgsetup{inkscapelatex=false}
+
+% Referencias
 \usepackage[sorting=none]{biblatex}
 \addbibresource{refs.bib}
 \usepackage{csquotes}
 \usepackage{bookmark}
+\usepackage[spanish]{cleveref}
+\crefname{figure}{la Figura}{las Figuras}
+\crefname{table}{la Tabla}{las Tablas}
+
+% Codigo
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage{svg}
-\svgsetup{inkscapelatex=false}
-
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
     commentstyle=\color{codegreen},
@@ -49,8 +49,9 @@
     showtabs=false,                  
     tabsize=2
 }
-
 \lstset{style=mystyle}
+
+
 
 \begin{document}
 \input{portada.tex}
@@ -65,7 +66,7 @@
 \chapter{Carta Gantt}
 \begin{center}
     \centering
-    \includegraphics[width=\textwidth]{img/gantt.png}
+    \includesvg[width=\textwidth]{gantt.svg}
 \end{center}
 
 \end{document}

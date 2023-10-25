@@ -1,10 +1,10 @@
 \chapter{Entorno de desarrollo}
 
-Este capítulo describe el proceso seguido para establecer el entorno de desarrollo, incluyendo los problemas que se encontraron, las soluciones que se tomaron y finalmente el resultado obtenido. Este entorno servirá de base para el trabajo posterior en los siguientes capítulos que, como está descrito en la sección de condiciones de diseño, tiene como función principal habilitar la validación del trabajo realizado por medio de la técnica ``Processor-in-Loop''.
+Este capítulo describe el proceso seguido para establecer el entorno de desarrollo, incluyendo los problemas que se encontraron, como se solucionaron y finalmente el resultado obtenido. Este entorno servirá de base para el trabajo posterior en los siguientes capítulos que, como está descrito en la sección de condiciones de diseño, tiene como función principal habilitar la validación del trabajo realizado por medio de la técnica ``Processor-in-Loop''.
 
 \section{Selección de autopiloto base}
 
-Existe un requisito que inmediatamente acota la selección de autopiloto, el software debe ser de código abierto debido a que posiblemente el código se deba modificar en caso de que las opciones de configuración del autopiloto no sean suficientes para cumplir los objetivos. En el laboratorio de técnicas aeroespaciales se cuenta con hardware Pixhawk programado con el firmware de fábrica PX4.
+En el laboratorio de técnicas aeroespaciales se cuenta con hardware Pixhawk programado con el firmware de fábrica PX4. Existe un requisito que inmediatamente acota la selección de autopiloto, el software debe ser de código abierto debido a que posiblemente este se deba modificar en caso de que las prestaciones del software no sean suficientes para cumplir los objetivos.
 
 \begin{figure}[h]
     \centering
@@ -13,7 +13,7 @@ Existe un requisito que inmediatamente acota la selección de autopiloto, el sof
     \label{fig:pixhawk1}
 \end{figure}
 
-El hardware autopiloto Pixhawk se puede programar con otro software distinto al del fabricante, entre aquellas soluciones las que son aplicables y de código abierto son ArduPilot, iNAV y Paparazzi, además de PX4 que también cumple con las condiciones de diseño \cite{survey}. iNAV no ofrece opciones de vuelo autónomo avanzadas como aterrizaje automático, que serán de interés en el capítulo de diseño de algoritmos de control. Paparazzi es una opción bastante interesante que si tiene un sistema autónomo completo por medio de archivos ``XML'' con la información del plan de vuelo \cite{paparazzi_flight_plan}, pero no es compatible con el software de control en tierra utilizado por ArduPilot y PX4, siendo Mission Planner y QGroundControl los principales.
+El hardware autopiloto Pixhawk se puede programar con otro software distinto al del fabricante, entre aquellas soluciones las que son aplicables según las condiciones de diseño y de código abierto son ArduPilot, iNAV y Paparazzi, además del mismo PX4 \cite{survey}. Revisando a un poco más detalle cada alternativa se puede notar que, iNAV no ofrece opciones de vuelo autónomo avanzadas como aterrizaje automático, que serán de interés en el capítulo de diseño de algoritmos de control. Paparazzi es una opción bastante interesante que si tiene un sistema autónomo completo por medio de archivos ``XML'' con la información del plan de vuelo \cite{paparazzi_flight_plan}, pero no es compatible con el software de control en tierra utilizado por ArduPilot y PX4, siendo Mission Planner y QGroundControl los principales.
 
 \begin{figure}[h]
     \centering
@@ -24,6 +24,83 @@ El hardware autopiloto Pixhawk se puede programar con otro software distinto al 
 
 PX4 es una opción atractiva ya que ofrece soporte para trabajar con técnicas ``Hardware-in-the-Loop'' con simuladores incluyendo X-Plane \cite{px4-hitl}. Sin embargo, aunque ArduPilot haya deprecado esa opción \cite{ap-hitl} existe más documentación en comparación con PX4 sobre como modificar existentes e implementar nuevos algoritmos de control \cite{ap-custom-controller}. Por esto último se decide en ArduPilot como plataforma de desarrollo.
 
-y será provechoso si ya existen esfuerzos por agregar la capacidad de algoritmos personalizados a alguno de estos lo que reduciría trabajo. Una solución que se acerca a esta visión es la de recompilar ArduPilot junto con código exportado de Simulink para la implementación de nuevos controladores \cite{ardupilot-custom}.
-
 \section{Extensión de protocolo de comunicación}
+
+El protocolo de comunicación desarrollado durante el proyecto de ingeniería aeroespacial, inoFS, permite a X-Plane comunicarse con un microcontrolador. La interfaz disponible para lograrlo es aquella disponible en prácticamente todos los controladores, UART o mejor conocida como Serial sobre USB. Para microcontroladores que ofrezcan acceso a la red por wifi o Ethernet inoFS también puede trabajar con paquetes UDP.
+
+\begin{figure}[h]
+    \centering
+    \includesvg[width=0.7\textwidth]{diagrama-fssp.svg}
+    \caption{Funcionamiento inoFS}
+    \label{fig:inofs-diagrama}
+\end{figure}
+
+Los detalles de su funcionamiento están en el informe de proyecto de ingeniería, pero cabe destacar el ``Programa intermediario'' en \cref{fig:inofs-diagrama} que es el principal responsable de traducir y reenviar los mensajes entre el simulador y el microcontrolador, se puede observar el programa funcionando junto a X-Plane en \cref{fig:inofs-programa-intermediario}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{inofs.png}
+    \caption{Programa intermediario de inoFS}
+    \label{fig:inofs-programa-intermediario}
+\end{figure}
+
+Para poder extender el protocolo de comunicación se debe ser capaz de realizar dos funciones, ingresar a ArduPilot el estado de vuelo de X-Plane como respuesta obtenida de sensores, y el ejecutar las acciones de control producidas por ArduPilot en X-Plane. Con estas funciones se puede considerar lista la implementación ``Processor-in-Loop'' y a continuación se describe el proceso para lograr cada una.
+
+\subsection{Ingresar información de sensores a ArduPilot}
+
+La primera opción a evaluar para poder entregarle a ArduPilot información de sensores es la descrita en la metodología en el capítulo 1, emular la misma respuesta que producirían sensores de verdad con algún microcontrolador y comunicarla por los puertos apropiados como son los de \cref{fig:pixhawk-ports}. Para sensores sencillos que producen una respuesta análoga como un potenciómetro esto es posible, pero los sensores utilizados en RPAS en su mayoría son digitales, por ejemplo los sensores en el Pixhawk disponible en el laboratorio son los siguientes \cite{pixhawk1}.
+
+\begin{itemize}
+    \item ST Micro L3GD20H 16 bit gyroscope
+    \item ST Micro LSM303D 14 bit accelerometer / magnetometer
+    \item Invensense MPU 6000 3-axis accelerometer / gyroscope
+    \item MEAS MS5611 barometer
+\end{itemize}
+
+Todos son sensores digitales, esto significa que al iniciar el sistema se les entrega alguna opción de configuración con la ayuda de un driver, y luego estos responden con las lecturas en un formato específico para cada sensor en forma de paquetes discretos. Por ejemplo el giroscopio L3GD20H espera que el microcontrolador (en este caso el que esté programado con ArduPilot) haga lecturas a ubicaciones en memoria del giroscopio \cite{gyro-datasheet}. Una de las ubicaciones de memoria en el giroscopio contiene información de sí las lecturas se han visto saturadas o si hay un valor nuevo como se ve en \cref{fig:gyro-health}. Emular cada sensor a una suficiente fidelidad capaz de ``engañar'' a ArduPilot de que está recibiendo lecturas reales es demasiado trabajo, por lo que se decide buscar alternativas.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{gyro-registers.png}
+    \caption{Ubicación en memoria del giroscopio con información de salud de las lecturas}
+    \label{fig:gyro-health}
+\end{figure}
+
+El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk disponible en el laboratorio) incluye puertos Serial disponibles para muchas funciones como son el recibir lecturas de sensores que trabajen con esa interfaz, enviar y recibir mensajes que utilizan el protocolo de telemetría MavLink \cite{ap-serial} o para alguna aplicación personalizada que el usuario quisiera programar por medio de scripting en el lenguaje Lua \cite{ap-scripting}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pixhawk-ports.png}
+    \caption{Puertos en Pixhawk}
+    \label{fig:pixhawk-ports}
+\end{figure}
+
+La siguiente alternativa evaluada es enviar lecturas de sensores generadas con algún protocolo propio por alguno de los puertos Serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe de alguna forma programar ArduPilot. Primero se consideró aprovechar el motor de scripting en Lua para esta tarea, la gracia de utilizar scripts es que no necesita modificar el código fuente de ArduPilot y por lo tanto tampoco reprogramar por completo el microcontrolador del autopiloto, ya que los scripts se cargan de manera dinámica desde la tarjeta SD. Lamentablemente los scripts no cuentan con la funcionalidad de poder generar lecturas de sensores críticos como son el IMU o GPS por lo que se descarta esta opción. Estudiando el código fuente de ArduPilot se identificó que este soporta un tipo de sensor llamado ``External Attitude Heading Reference System'', que está compuesto por un IMU, giroscopio, magnetómetro y GPS, los sensores principales necesarios para el funcionamiento del autopiloto. ArduPilot da soporte para tres sistemas de estimación de actitud externos disponibles en el mercado \cite{ap-eahrs}.
+
+\begin{itemize}
+    \item MicroStrain 3DM® Series
+    \item VectorNav VN-300 AHRS
+    \item VectorNav VN-100 AHRS
+\end{itemize}
+
+Estos sistemas incluyen múltiples sensores, realizan su propia fusión y exportan los datos por puerto serial, ArduPilot tiene drivers escritos para interpretar la información entregada como lecturas para cada uno de los sensores descritos, en reemplazo de los sensores que estén incluidos en el autopiloto. Se decidió por escribir un driver para un nuevo sistema de estimación de actitud externo ficticio que actúe de la misma manera que los existentes, pero que reciba los datos con un protocolo propio. Esto implica que se debe modificar el código fuente de ArduPilot para agregar el nuevo driver y el código del driver en sí, en \cref{fig:eahrs} se puede observar la clase principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\textwidth]{eahrs.png}
+    \caption{Archivos de código fuente para sistemas de estimación de actitud externos}
+    \label{fig:eahrs}
+\end{figure}
+
+Se escribió el nuevo driver para sistema externo ficticio en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un microcontrolador de pruebas. Para el desarrollo no se utilizó el hardware disponible en el laboratorio sino que un microcontrolador disponible personalmente, al que ArduPilot también ofrece soporte. Se espera poder cargar la versión final del proyecto en uno de los controladores del laboratorio. Se lleva registro del desarrollo del nuevo driver en un ``fork'' de ArduPilot personal \cite{ap-hitl-fork}.
+
+Durante las pruebas del nuevo driver se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación importante en uno de los componentes principales de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC puede leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden entregar lecturas a una frecuencia  hasta 1000 Hz para algunos como el MPU-6000 mencionado previamente. Además de la incerteza de la velocidad de FSUIPC está la latencia generada por tener que enviar la información por el programa intermediario. Para evitar el posible problema que esto pueda producir se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{hitl-plugin-1.png}
+    \caption{Primera versión de plug-in ``PIL'' para X-Plane}
+    \label{fig:hitl-plugin-1}
+\end{figure}
+
+El desarrollo del plug-in se lleva a cabo en un repositorio personal \cite{xplane-hitl-plugin} y su primera versión mostrada en \cref{fig:hitl-plugin-1} junto con el driver personalizado para ArduPilot sirven de prototipo de que el diseño actual es viable, enviando información al microcontrolador por el puerto serial seleccionado en la interfaz.
