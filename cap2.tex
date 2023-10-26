@@ -134,7 +134,7 @@ El puerto serial al que el plug-in de X-Plane envía los datos no es el del auto
 
 \begin{figure}[h]
     \centering
-    \includesvg[width=0.8\textwidth]{pico-pins.svg}
+    \includesvg[width=0.5\textwidth]{pico-pins.svg}
     \caption{Diagrama de pines en Raspberry Pi Pico}
     \label{fig:pico-pins}
 \end{figure}
@@ -146,4 +146,18 @@ El puerto serial al que el plug-in de X-Plane envía los datos no es el del auto
     \label{fig:missionplanner-params-serial}
 \end{figure}
 
-Con todo configurado y conectado se logra comprobar que la información de X-Plane está siendo procesada por el autopiloto, observando que el movimiento del horizonte artificial en Mission Planner corresponde al de la inclinación de la aeronave.
+Con todo configurado y conectado como en \cref{fig:setup} se logra comprobar que la información de X-Plane está siendo procesada por el autopiloto, en \cref{fig:qgroundcontrol} se observa que los movimientos del horizonte artificial del software en tierra (ahora QGroundControl) corresponden al de la inclinación de la aeronave. Hasta este punto se nota que el horizonte esta al revés porque aún falta procesar y calibrar un poco los datos para entregarlos de la forma que espera ArduPilot y no utilizar valores directos desde X-Plane.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{setup.jpg}
+    \caption{Autopiloto y microcontrolador comunicados por dos cables serial}
+    \label{fig:setup}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{xplane-qgroundcontrol.png}
+    \caption{Lecturas de inclinación y orientación en QGroundControl}
+    \label{fig:qgroundcontrol}
+\end{figure}
