@@ -2,13 +2,27 @@
 
 \section{Contexto}
 
-discusión sobre la utilidad de RPAs autónomos y luego hablar sobre los tipos de controladores
+Actualmente, las aeronaves no tripuladas son utilizadas para actividades recreativas tanto como comerciales en la industria. Por nombrar algunas aplicaciones estas pueden ser agricultura donde se requiere monitorear cultivos, topografía para creación de mapas y planificación, búsqueda y rescate donde las aeronaves pueden abarcar un gran área mientras transmiten imágen en alta resolución, o para la fotografía en general. En \cref{fig:disco} se puede observar una aeronave tipo ala delta llamada ``Parrot Disco'' caracterizada por su capacidad de grabar video en alta resolución y ofrecer visión en primera persona, su controlador se puede programar con el software ArduPilot donde en su documentación se ofrecen instrucciones para ello \cite{disco2}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{disco-flying.jpg}
+    \caption{Aeronave de ala fija ``Parrot Disco''.}
+    \label{fig:disco}
+\end{figure}
+
+Los controladores que gobiernan el vuelo de una aeronave no tripulada son sistemas autopiloto que cuentan con funciones que van desde asegurar la estabilidad en un vuelo manual hasta la ejecución de misiones completamente autónomas. Estos sistemas son programados con un software que tiene como tarea básica extraer lecturas del estado actual desde los sensores y generar acciones de control apropiadas para la actual aplicación. Existe una amplia variedad de software autopiloto que se puede categorizar en la función para la que está diseñado y de sí el código del mismo está disponible o no, en \cref{fig:opensource-autopilots} se presenta una muestra de los software autopiloto existentes de código abierto según su aplicación \cite{survey}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{opensource-autopilots.png}
+    \caption{Categorización de software autopiloto de código abierto.}
+    \label{fig:opensource-autopilots}
+\end{figure}
 
 \section{Planteamiento del problema}
 
-Los software controlador de RPAS mantenidos actualmente como ArduPilot o Pixhawk incluyen sistemas de autopiloto y vuelo asistido generalmente a base de algoritmos PID. En algunos casos como con Pixhawk los detalles de implementación del controlador están documentados \cite{px4-control-diagram}, permitiendo que un usuario experimentado pueda ajustar los parámetros en busca de un mejor desempeño. \emph{Quizás se quiera lograr un vuelo más estable si se está pilotando manualmente \cite{betaflight-pid-tuning}, o en misiones autónomas reducir el consumo de las baterías, maximizar la distancia a recorrer o reducir el tiempo que una misión pueda tomar}. Otra manera de lograr estos objetivos puede ser reemplazando por completo el algoritmo PID por controladores basados en modelos dinámicos como lo son LGR y LQR. Si bien estos tipos de controlador han sido probados \cite{yt-lqr} los software autopiloto no ofrecen una arquitectura accesible que permita el prototipado rápido y la validación de estos sistemas.
-
-Los PID no son optimos citar, implementar un nuevo algoritmo es peligroso en vuelo no citar
+\textbf{Los software controlador de RPAS mantenidos actualmente como ArduPilot o Pixhawk incluyen sistemas de autopiloto y vuelo asistido generalmente a base de algoritmos PID.} En algunos casos como con Pixhawk los detalles de implementación del controlador están documentados \cite{px4-control-diagram}, permitiendo que un usuario experimentado pueda \textbf{ajustar los parámetros en busca de un mejor desempeño.} \emph{Quizás se quiera lograr un vuelo más estable si se está pilotando manualmente \cite{betaflight-pid-tuning}, o en misiones autónomas reducir el consumo de las baterías, maximizar la distancia a recorrer o reducir el tiempo que una misión pueda tomar}. Otra manera de lograr estos objetivos \textbf{puede ser reemplazando por completo el algoritmo PID por controladores basados en modelos dinámicos como lo son LGR y LQR.} Si bien estos tipos de controlador han sido probados \cite{yt-lqr} los software autopiloto no ofrecen una arquitectura accesible que permita el prototipado rápido y la validación de estos sistemas. El prototipado rápido en este caso definido como el abrir acceso al código de los algoritmos para su modificación e iteración, donde se encuentren las entradas de los sensores y se genere la acción de control. La validación del sistema modificado sería el confirmar que en cierto contexto el algoritmo de control se pueda sintonizar a una aeronave y ejecutar planes de vuelo adecuadamente. Debido a lo experimental de una arquitectura así y lo costoso que puede ser una aeronave no tripulada se decide por su implementación en un ambiente simulado. Específicamente la verificación con X-Plane, donde el prototipado se realizara con un autopiloto que maneje una aeronave en simulación y la validación tendrá valor al lograrse la sintonización de aeronaves simuladas, pero desarrolladas por equipos profesionales donde el vuelo es comparable con la realidad.
 
 \section{Objetivo}
 
@@ -30,7 +44,7 @@ Al tratarse de un trabajo para el laboratorio de técnicas aeroespaciales, es de
 
 \subsection{Entorno de desarrollo}
 
-El entorno de desarrollo debe ser construido como una extensión del protocolo de comunicación con X-Plane establecido en el proyecto de ingeniería \cite{pia}, habilitando una interfaz a microcontroladores con software autopiloto donde X-Plane emule las funciones que haría una aeronave real. X-Plane debe proporcionar lecturas de sensores simulados y responder apropiadamente a entradas de control de radio lo cual es una técnica conocida como ``Processor-in-Loop'' \cite{pil}. Esta técnica facilita que el trabajo realizado en simulación pueda ser aplicado en aeronaves reales, puesto que para el controlador autopiloto no existirá diferencia entre estar conectado a X-Plane o funcionando en una aeronave real. Los autopilotos además se conectan a un software de estación en tierra que habilita una interfaz gráfica que permite monitorear el vuelo y crear una ruta para la misión \cite{ardupilot-gs}, entre otras cosas. El diseñar la arquitectura alrededor de software como ArduPilot o Pixhawk permite aprovechar todas estas funciones existentes. Los sistemas de autopiloto cuentan con interfaces estandarizadas para conectar sensores y entradas de radiocontrol. Es imperativo seleccionar una base que cuente con estos estándares definidos para la posterior implementación de los sensores simulados y la entrada de radiocontrol. El autopiloto base debe ser uno de los que ya se tenga experiencia en el laboratorio como Pixhawk o ArduPilot.
+El entorno de desarrollo debe ser construido como una extensión del protocolo de comunicación con X-Plane establecido en el proyecto de ingeniería \cite{pia}, habilitando una interfaz a microcontroladores con software autopiloto donde X-Plane emule las funciones que haría una aeronave real. X-Plane debe proporcionar lecturas de sensores simulados y responder apropiadamente a entradas de control de radio lo cual es una técnica conocida como ``Processor-in-Loop'' \cite{pil}. Esta técnica facilita que el trabajo realizado en simulación pueda ser aplicado en aeronaves reales, puesto que para el controlador autopiloto no existirá diferencia entre estar conectado a X-Plane o funcionando en una aeronave real. Los autopilotos además se conectan a un software de estación en tierra que habilita una interfaz gráfica que permite monitorear el vuelo y crear una ruta para la misión \cite{ardupilot-gs}, entre otras cosas. El diseñar la arquitectura alrededor de software como ArduPilot o PX4 permite aprovechar todas estas funciones existentes. Los sistemas de autopiloto cuentan con interfaces estandarizadas para conectar sensores y entradas de radiocontrol. Es imperativo seleccionar una base que cuente con estos estándares definidos para la posterior implementación de los sensores simulados y la entrada de radiocontrol. El autopiloto base debe ser uno de los que ya se tenga experiencia en el laboratorio como PX4 o ArduPilot.
 
 \begin{figure}[h]
     \centering
@@ -41,10 +55,7 @@ El entorno de desarrollo debe ser construido como una extensión del protocolo d
 
 \subsection{Diseño de algoritmos de control}
 
-[ARREGLAR]
-matlab y simulink
-
-Un algoritmo podrá ser validado en el software de simulación X-Plane como primera iteración, en este se podrá probar la interfaz entre el controlador de vuelo y X-Plane, la capacidad de sintonizar el algoritmo a aeronaves específicas y la realización de misiones autónomas. Esto será parte de un proceso sistemático con instrucciones con el objetivo final de que los algoritmos puedan ser probados en aeronaves reales. El procedimiento de diseño de controladores fomentará la experimentación con base en herramientas ya utilizadas en el laboratorio como lo son Simulink o Python. Con especial enfoque en aeronaves de ala fija.
+La funcionalidad de habilitar la modificación de los algoritmos de control existentes o la implementación de uno nuevo debe incorporar el uso de lenguajes diseñados para ello, como Simulink, en el que se tenga acceso a las entradas como lecturas de los sensores y a generar acciones de control. Un algoritmo podrá ser validado en el software de simulación X-Plane como primera iteración, en este se podrá probar la interfaz entre el controlador de vuelo y X-Plane, la capacidad de sintonizar el algoritmo a aeronaves específicas y la realización de misiones autónomas. Esto será parte de un proceso sistemático con instrucciones con el objetivo final de que los algoritmos puedan ser probados en aeronaves reales. El procedimiento de diseño de controladores fomentará la experimentación con base en herramientas ya utilizadas en el laboratorio como lo son Simulink o Python. Con especial enfoque en aeronaves de ala fija.
 
 \section{Metodología de trabajo}
 
