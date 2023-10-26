@@ -75,7 +75,11 @@ El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk dispo
     \label{fig:pixhawk-ports}
 \end{figure}
 
-La siguiente alternativa evaluada es enviar lecturas de sensores generadas con algún protocolo propio por alguno de los puertos Serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe de alguna forma programar ArduPilot. Primero se consideró aprovechar el motor de scripting en Lua para esta tarea, la gracia de utilizar scripts es que no necesita modificar el código fuente de ArduPilot y por lo tanto tampoco reprogramar por completo el microcontrolador del autopiloto, ya que los scripts se cargan de manera dinámica desde la tarjeta SD. Lamentablemente los scripts no cuentan con la funcionalidad de poder generar lecturas de sensores críticos como son el IMU o GPS por lo que se descarta esta opción. Estudiando el código fuente de ArduPilot se identificó que este soporta un tipo de sensor llamado ``External Attitude Heading Reference System'', que está compuesto por un IMU, giroscopio, magnetómetro y GPS, los sensores principales necesarios para el funcionamiento del autopiloto. ArduPilot da soporte para tres sistemas de estimación de actitud externos disponibles en el mercado \cite{ap-eahrs}.
+La siguiente alternativa evaluada es enviar lecturas de sensores generadas con algún protocolo propio por alguno de los puertos Serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe de alguna forma programar ArduPilot.
+
+Primero se consideró aprovechar el motor de scripting en Lua para esta tarea. La ventaja de utilizar scripts es que no necesita modificar el código fuente de ArduPilot y por lo tanto tampoco reprogramar por completo el microcontrolador del autopiloto, ya que los scripts se cargan de manera dinámica desde la tarjeta SD. Lamentablemente los scripts no cuentan con la funcionalidad de poder generar lecturas de sensores críticos como son el IMU o GPS por lo que se descarta esta opción.
+
+Estudiando el código fuente de ArduPilot se identificó que este soporta un tipo de sensor llamado ``External Attitude Heading Reference System'', que está compuesto por un IMU, giroscopio, magnetómetro y GPS, los sensores principales necesarios para el funcionamiento del autopiloto. ArduPilot da soporte para tres sistemas de estimación de actitud externos disponibles en el mercado \cite{ap-eahrs}.
 
 \begin{itemize}
     \item MicroStrain 3DM® Series
@@ -83,7 +87,7 @@ La siguiente alternativa evaluada es enviar lecturas de sensores generadas con a
     \item VectorNav VN-100 AHRS
 \end{itemize}
 
-Estos sistemas incluyen múltiples sensores, realizan su propia fusión y exportan los datos por puerto serial, ArduPilot tiene drivers escritos para interpretar la información entregada como lecturas para cada uno de los sensores descritos, en reemplazo de los sensores que estén incluidos en el autopiloto. Se decidió por escribir un driver para un nuevo sistema de estimación de actitud externo ficticio que actúe de la misma manera que los existentes, pero que reciba los datos con un protocolo propio. Esto implica que se debe modificar el código fuente de ArduPilot para agregar el nuevo driver y el código del driver en sí, en \cref{fig:eahrs} se puede observar la clase principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}.
+Estos sistemas incluyen múltiples sensores, realizan su propia fusión y exportan los datos por puerto serial, ArduPilot tiene drivers escritos para interpretar la información entregada como lecturas para cada uno de los sensores descritos, en reemplazo de los sensores que estén incluidos en el autopiloto. Se decidió por escribir un driver para un nuevo sistema de estimación de actitud externo ficticio que actúe de la misma manera que los existentes y este reciba los datos con un protocolo propio. Esto implica que se debe modificar el código fuente de ArduPilot, en \cref{fig:eahrs} se puede observar la clase principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}.
 
 \begin{figure}[h]
     \centering
@@ -92,9 +96,25 @@ Estos sistemas incluyen múltiples sensores, realizan su propia fusión y export
     \label{fig:eahrs}
 \end{figure}
 
-Se escribió el nuevo driver para sistema externo ficticio en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un microcontrolador de pruebas. Para el desarrollo no se utilizó el hardware disponible en el laboratorio sino que un microcontrolador disponible personalmente, al que ArduPilot también ofrece soporte. Se espera poder cargar la versión final del proyecto en uno de los controladores del laboratorio. Se lleva registro del desarrollo del nuevo driver en un ``fork'' de ArduPilot personal \cite{ap-hitl-fork}.
+Se escribió el nuevo driver para sistema externo ficticio en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un microcontrolador de pruebas. Para el desarrollo no se utilizó el hardware disponible en el laboratorio sino que un microcontrolador personal, al que ArduPilot también ofrece soporte. Se espera probar el proyecto en uno de los controladores del laboratorio cuando sea el momento de implementar el vuelo manual con radiocontrol. Se lleva registro del desarrollo del nuevo driver en un ``fork'' de ArduPilot \cite{ap-hitl-fork}.
 
-Durante las pruebas del nuevo driver se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación importante en uno de los componentes principales de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC puede leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden entregar lecturas a una frecuencia  hasta 1000 Hz para algunos como el MPU-6000 mencionado previamente. Además de la incerteza de la velocidad de FSUIPC está la latencia generada por tener que enviar la información por el programa intermediario. Para evitar el posible problema que esto pueda producir se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación.
+Para probar que el autopiloto esté ejecutando el código del nuevo driver, ArduPilot se debe compilar y cargar al autopiloto según las instrucciones en su documentación \cite{ap-build}. Luego se conecta por serial USB a un computador y por medio de alguno de los programas de estación en tierra como Mission Planner se ajusta el parámetro que indica que se utilizara un sistema inercial externo como se puede observar en \cref{fig:missionplanner-params}. Mission Planner no reconoce el nombre de la nueva opción correctamente mostrando un espacio en blanco, pero al seleccionarla y reiniciar el autopiloto se puede comprobar que se está ejecutando el nuevo driver en el registro como se ve en \cref{fig:missionplanner-log}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{missionplanner-params.png}
+    \caption{Selección de sistema inercial externo en Mission Planner}
+    \label{fig:missionplanner-params}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{missionplanner-log.png}
+    \caption{Registro de inicialización de Mission Planner}
+    \label{fig:missionplanner-log}
+\end{figure}
+
+Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación importante en uno de los componentes principales de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC puede leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden entregar lecturas a una frecuencia  hasta 1000 Hz para algunos como el MPU-6000 mencionado anteriormente. Además de la incerteza de la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para evitar el posible problema que esto pueda producir se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio \cite{xplane-hitl-plugin}.
 
 \begin{figure}[h]
     \centering
@@ -103,4 +123,27 @@ Durante las pruebas del nuevo driver se descubrió un nuevo posible problema, co
     \label{fig:hitl-plugin-1}
 \end{figure}
 
-El desarrollo del plug-in se lleva a cabo en un repositorio personal \cite{xplane-hitl-plugin} y su primera versión mostrada en \cref{fig:hitl-plugin-1} junto con el driver personalizado para ArduPilot sirven de prototipo de que el diseño actual es viable, enviando información al microcontrolador por el puerto serial seleccionado en la interfaz.
+El puerto serial al que el plug-in de X-Plane envía los datos no es el del autopiloto, en un computador se accede a puerto serial por USB y los sistemas inerciales externos no son USB, sino que utilizan dos pines ``RX'' y ``TX'' de entrada y salida. Por esto para completar la implementación del sistema inercial externo ficticio se utiliza otro microcontrolador que reenviara los mensajes desde X-Plane hasta el autopiloto y viceversa, como se visualiza en \cref{fig:plugin}. En este caso se utiliza una Raspberry Pi Pico donde se configuran dos interfaces serial, una por USB y otra por los pines GPIO 4 y 5 ubicados como se ve en \cref{fig:pico-pins}. El puerto serial que utilizara el autopiloto se configura en los parámetros accesibles en Mission Planner como se ve en \cref{{fig:missionplanner-params-serial}}, donde ``Serial 2'' hace referencia al puerto serial 2 que está en cada autopiloto asignado a ciertos pines indicados por alguna etiqueta en la carcasa, como se puede observar en el Pixhawk en \cref{fig:pixhawk-ports} donde seria ``Telem 2''.
+
+\begin{figure}[h]
+    \centering
+    \includesvg[width=0.7\textwidth]{plugin.svg}
+    \caption{Comunicación entre X-Plane y autopiloto}
+    \label{fig:plugin}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includesvg[width=0.8\textwidth]{pico-pins.svg}
+    \caption{Diagrama de pines en Raspberry Pi Pico}
+    \label{fig:pico-pins}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{missionplanner-params-serial.png}
+    \caption{Especificación de función de puerto serial en Mission Planner}
+    \label{fig:missionplanner-params-serial}
+\end{figure}
+
+Con todo configurado y conectado se logra comprobar que la información de X-Plane está siendo procesada por el autopiloto, observando que el movimiento del horizonte artificial en Mission Planner corresponde al de la inclinación de la aeronave.
