@@ -1,3 +1,7 @@
-\chapter{Documentación}
+\chapter{Diseño de algoritmos de control}
 
-[todo]
+Por lo general los software de autopiloto cuentan con un solo tipo de algoritmo de control para cada lazo y aunque ofrezcan opciones para activar o desactivar ciertas asistencias \cite{ardupilot-flight-modes}, o el ajuste de parámetros internos \cite{ardupilot-plane-tuning} no tienen forma de cambiar por completo el algoritmo de control. Esto por lo general es una decisión de diseño, ya que los lazos PID han demostrado ser suficientes para los requerimientos de la plataforma y dar soporte para más alternativas es trabajo extra. Los controladores de vuelo realizan varias funciones internas de menor nivel para poder habilitar las asistencias y hacer de autopiloto, por ejemplo la recopilación de información de los sensores y posterior filtrado no es un problema trivial y en ArduPilot ha pasado por varias iteraciones \cite{ardupilot-ekf}.
+
+\section{Modificación de algoritmo existente}
+
+\section{Implementación de nuevo algoritmo}
