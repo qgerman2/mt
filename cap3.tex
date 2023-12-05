@@ -26,7 +26,7 @@ PX4 es una opción atractiva ya que ofrece soporte para trabajar con técnicas `
 
 \section{Extensión de protocolo de comunicación}
 
-El protocolo de comunicación desarrollado durante el proyecto de ingeniería aeroespacial, inoFS, permite a X-Plane comunicarse con un microcontrolador. La interfaz disponible para lograrlo es aquella disponible en prácticamente todos los controladores, UART o mejor conocida como Serial sobre USB. Para microcontroladores que ofrezcan acceso a la red por wifi o Ethernet inoFS también puede trabajar con paquetes UDP.
+El protocolo de comunicación desarrollado durante el proyecto de ingeniería aeroespacial, inoFS, permite a X-Plane comunicarse con un microcontrolador. La interfaz disponible para lograrlo es aquella disponible en prácticamente todos los controladores, UART o mejor conocida como serial sobre USB. Para microcontroladores que ofrezcan acceso a la red por wifi o Ethernet inoFS también puede trabajar con paquetes UDP.
 
 \begin{figure}[h]
     \centering
@@ -66,7 +66,7 @@ Todos son sensores digitales, esto significa que al iniciar el sistema se les en
     \label{fig:gyro-health}
 \end{figure}
 
-El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk disponible en el laboratorio) incluye puertos Serial disponibles para muchas funciones como son el recibir lecturas de sensores que trabajen con esa interfaz, enviar y recibir mensajes que utilizan el protocolo de telemetría MavLink \cite{ap-serial} o para alguna aplicación personalizada que el usuario quisiera programar por medio de scripting en el lenguaje Lua \cite{ap-scripting}.
+El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk disponible en el laboratorio) incluye puertos serial disponibles para muchas funciones como son el recibir lecturas de sensores que trabajen con esa interfaz, enviar y recibir mensajes que utilizan el protocolo de telemetría MavLink \cite{ap-serial} o para alguna aplicación personalizada que el usuario quisiera programar por medio de scripting en el lenguaje Lua \cite{ap-scripting}.
 
 \begin{figure}[h]
     \centering
@@ -75,7 +75,7 @@ El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk dispo
     \label{fig:pixhawk-ports}
 \end{figure}
 
-La siguiente alternativa evaluada es enviar lecturas de sensores generadas con algún protocolo propio por alguno de los puertos Serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe de alguna forma programar ArduPilot.
+La siguiente alternativa evaluada es enviar lecturas de sensores generadas con algún protocolo propio por alguno de los puertos serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe de alguna forma programar ArduPilot.
 
 Primero se consideró aprovechar el motor de scripting en Lua para esta tarea. La ventaja de utilizar scripts es que no necesita modificar el código fuente de ArduPilot y por lo tanto tampoco reprogramar por completo el microcontrolador del autopiloto, ya que los scripts se cargan de manera dinámica desde la tarjeta SD. Lamentablemente los scripts no cuentan con la funcionalidad de poder generar lecturas de sensores críticos como son el IMU o GPS por lo que se descarta esta opción.
 
@@ -89,7 +89,7 @@ Estudiando el código fuente de ArduPilot se identificó que este soporta sistem
 
 ArduPilot ofrece la opción de utilizar la estimación de actitud producida por el sistema externo directamente, o de forma alternativa solo recibir las mediciones de los sensores y por medio de un filtro de Kalman generar su propia estimación. En el contexto del proyecto ambas opciones son útiles, el que ArduPilot reciba la información de actitud perfecta de X-Plane permite descartar esta variable de los problemas que se vayan a producir durante las pruebas del controlador personalizado. Y el solo incorporar las lecturas de sensores y que ArduPilot realice su propia estimación con filtro de Kalman es lo que este haría en un vuelo real.
 
-Se decidió escribir un driver para un nuevo sistema de estimación de actitud externo ficticio el cual recibirá lecturas de sensor y actitud por medio de conexión Serial, que además entregara por esta misma conexión la respuesta de la acción de control que esté produciendo ArduPilot como salidas de servo. La creación de este nuevo driver en el lado de ArduPilot implica que se debe modificar el código fuente, en \cref{fig:eahrs} se pueden observar los archivos que componen los sistemas de estimación de actitud externos, la clase principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}. El código fuente del nuevo driver se escribió en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un autopiloto de pruebas.
+Se decidió escribir un driver para un nuevo sistema de estimación de actitud externo ficticio el cual recibirá lecturas de sensor y actitud por medio de conexión serial, que además entregara por esta misma conexión la respuesta de la acción de control que esté produciendo ArduPilot como salidas de servo. La creación de este nuevo driver en el lado de ArduPilot implica que se debe modificar el código fuente, en \cref{fig:eahrs} se pueden observar los archivos que componen los sistemas de estimación de actitud externos, la clase principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}. El código fuente del nuevo driver se escribió en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un autopiloto de pruebas.
 
 \begin{figure}[h]
     \centering
@@ -116,7 +116,7 @@ Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mis
     \label{fig:missionplanner-log}
 \end{figure}
 
-Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación producto de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC o XPUIPC pueden leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden llegar a entregar lecturas a una frecuencia de hasta 1000 Hz como lo hace el MPU-6000. Además de la incerteza de la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para asegurar la máxima frecuencia de datos posible se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto Serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio en GitHub de la misma manera que para el ``fork'' de ArduPilot \cite{xplane-hitl-plugin}.
+Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación producto de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC o XPUIPC pueden leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden llegar a entregar lecturas a una frecuencia de hasta 1000 Hz como lo hace el MPU-6000. Además de la incerteza de la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para asegurar la máxima frecuencia de datos posible se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio en GitHub de la misma manera que para el ``fork'' de ArduPilot \cite{xplane-hitl-plugin}.
 
 \begin{figure}[h]
     \centering
@@ -125,10 +125,12 @@ Durante las pruebas se descubrió un nuevo posible problema, como ha sido descri
     \label{fig:hitl-plugin-1}
 \end{figure}
 
-El plug-in proporciona lecturas de sensor ficticio y la actitud de la aeronave por medio de la interfaz Serial. En primera instancia el dispositivo Serial seleccionado en el plug-in es un Raspberry Pi Pico conectado al computador por USB el cual retransmite la información al autopiloto también por Serial por uno de los puertos de telemetría como se observa en \cref{fig:pi-pixhawk4}. El programa cargado en el microcontrolador (utilizando el entorno de desarrollo Arduino IDE 2) solo realiza la tarea de retransmitir los datos recibidos por Serial USB a Serial por los pines GPIO 4 y 5 como se puede observar en \cref{fig:pico-pins} y el código para cumplir la función es \cref{lst:serial-passthrough}
+El desarrollo de plug-ins para X-Plane se realiza programando instrucciones en C++ y enlazando el SDK (Software Development Kit) que da acceso a una selección de librerías útiles para interactuar con el simulador \cite{xplane-plugin-dev}. El entorno de desarrollo en específico para este trabajo es Visual Studio Code con el compilador de Microsoft MSVC \cite{vscode-cpp}, los archivos disponibles en el repositorio incluyen la configuración (en el archivo \texttt{.vscode/tasks.json}) para poder compilar el plug-in en el editor de texto si se ha instalado el mismo compilador.
+
+El plug-in proporciona lecturas de sensor ficticio y la actitud de la aeronave por medio de la interfaz serial. En primera instancia el dispositivo serial seleccionado en el plug-in es un Raspberry Pi Pico conectado al computador por USB el cual retransmite la información al autopiloto también por serial por uno de los puertos de telemetría como se observa en \cref{fig:pi-pixhawk4,fig:plugin}. El programa cargado en el microcontrolador (utilizando el entorno de desarrollo Arduino IDE 2) solo realiza la tarea de retransmitir los datos recibidos por serial USB a serial por los pines GPIO 4 y 5 y el código para cumplir la función es \cref{lst:serial-passthrough}
 
 \begin{listing}[h]
-    \begin{minted}[frame=single]{C}
+    \begin{minted}[frame=single,fontsize=\small]{C}
 UART Serial2(4, 5, NC, NC);
 void setup() {
     Serial.begin(115200);
@@ -143,20 +145,16 @@ void loop() {
     }
 }
     \end{minted}
-    \caption{Retransmisor Serial}
+    \caption{Retransmisor serial}
     \label{lst:serial-passthrough}
 \end{listing}
 
-
-
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{pi-pixhawk4.jpeg}
-    \caption{Raspberry Pi Pico enviando lecturas de sensor y actitud a Pixhawk 4}
+    \includegraphics[width=0.5\textwidth]{pi-pixhawk4.jpeg}
+    \caption{Raspberry Pi Pico conectado a Pixhawk 4}
     \label{fig:pi-pixhawk4}
 \end{figure}
-
-El puerto serial al que el plug-in de X-Plane envía los datos no es el del autopiloto, en un computador se accede a puerto serial por USB y los sistemas inerciales externos no son USB, sino que utilizan dos pines ``RX'' y ``TX'' de entrada y salida. Por esto para completar la implementación del sistema inercial externo ficticio se utiliza otro microcontrolador que reenviara los mensajes desde X-Plane hasta el autopiloto y viceversa, como se visualiza en \cref{fig:plugin}. En este caso se utiliza una Raspberry Pi Pico donde se configuran dos interfaces serial, una por USB y otra por los pines GPIO 4 y 5 ubicados como se ve en  El puerto serial que utilizara el autopiloto se configura en los parámetros accesibles en Mission Planner como se ve en \cref{{fig:missionplanner-params-serial}}, donde ``Serial 2'' hace referencia al puerto serial 2 que está en cada autopiloto asignado a ciertos pines indicados por alguna etiqueta en la carcasa, como se puede observar en el Pixhawk en \cref{fig:pixhawk-ports} donde seria ``Telem 2''.
 
 \begin{figure}[h]
     \centering
@@ -165,12 +163,7 @@ El puerto serial al que el plug-in de X-Plane envía los datos no es el del auto
     \label{fig:plugin}
 \end{figure}
 
-\begin{figure}[h]
-    \centering
-    \includesvg[width=0.5\textwidth]{pico-pins.svg}
-    \caption{Diagrama de pines en Raspberry Pi Pico}
-    \label{fig:pico-pins}
-\end{figure}
+Para terminar esta implementación de la comunicación, se configura el puerto de telemetría donde está conectado el Raspberry como interfaz para sistema de estimación de actitud externo, como se observa en \cref{fig:missionplanner-params-serial} seleccionando la opción ``AHRS''.
 
 \begin{figure}[h]
     \centering
@@ -179,14 +172,7 @@ El puerto serial al que el plug-in de X-Plane envía los datos no es el del auto
     \label{fig:missionplanner-params-serial}
 \end{figure}
 
-Con todo configurado y conectado como en \cref{fig:setup} se logra comprobar que la información de X-Plane está siendo procesada por el autopiloto, en \cref{fig:qgroundcontrol} se observa que los movimientos del horizonte artificial del software en tierra (ahora QGroundControl) corresponden al de la inclinación de la aeronave. Hasta este punto se nota que el horizonte esta al revés porque aún falta procesar y calibrar un poco los datos para entregarlos de la forma que espera ArduPilot y no utilizar valores directos desde X-Plane.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\textwidth]{setup.jpg}
-    \caption{Autopiloto y microcontrolador comunicados por dos cables serial}
-    \label{fig:setup}
-\end{figure}
+Con todo configurado se logra comprobar que la información de X-Plane está siendo procesada por el autopiloto, en \cref{fig:qgroundcontrol2} se observa que los movimientos del horizonte artificial del software en tierra (ahora QGroundControl) corresponden al de la inclinación de la aeronave. Hasta este punto se nota que el horizonte esta al revés porque aún falta procesar y calibrar un poco los datos para entregarlos en el formato que espera ArduPilot.
 
 \begin{figure}[h]
     \centering

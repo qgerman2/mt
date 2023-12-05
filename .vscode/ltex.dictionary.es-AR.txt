@@ -22,3 +22,9 @@ FSUIPC
 HITL
 GPIO
 IDE
+Raspberry
+QGroundControl
+ArduPilot
+MavLink
+Development
+Code
