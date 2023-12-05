@@ -9,7 +9,7 @@ VectorNav
 AHRS
 Kalman
 Plane
-PixHawk
+Pixhawk
 fork
 ArduPlane
 Planner
@@ -19,3 +19,6 @@ Flight
 Simulator
 XPUIPC
 FSUIPC
+HITL
+GPIO
+IDE

@@ -98,7 +98,7 @@ Se decidió escribir un driver para un nuevo sistema de estimación de actitud e
     \label{fig:eahrs}
 \end{figure}
 
-El proceso de compilación de ArduPilot está documentado \cite{ap-build} y se puede cargar al autopiloto por USB de la misma forma que actualizando firmware de ArduPilot oficial. En el laboratorio de técnicas aeroespaciales se proporcionó de un autopiloto PixHawk 4 soportado de manera oficial por los desarrolladores de ArduPilot \cite{pixhawk4}. Para realizar la modificación del firmware de manera ordenada se creó un ``fork'' de la versión estable de ArduPlane en el momento de escritura del informe 4.4.2, sobre la que se escribe el nuevo driver y se lleva un registro de cada cambio en el repositorio en GitHub \cite{ap-hitl-fork}.
+El proceso de compilación de ArduPilot está documentado \cite{ap-build} y se puede cargar al autopiloto por USB de la misma forma que actualizando firmware de ArduPilot oficial. En el laboratorio de técnicas aeroespaciales se proporcionó de un autopiloto Pixhawk 4 soportado de manera oficial por los desarrolladores de ArduPilot \cite{pixhawk4}. Para realizar la modificación del firmware de manera ordenada se creó un ``fork'' de la versión estable de ArduPlane en el momento de escritura del informe 4.4.2, sobre la que se escribe el nuevo driver y se lleva un registro de cada cambio en el repositorio en GitHub \cite{ap-hitl-fork}.
 
 Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mission Planner se ajusta el parámetro que indica que se utilizara un sistema inercial externo como se puede observar en \cref{fig:missionplanner-params}. Mission Planner no reconoce el nombre de la nueva opción correctamente mostrando un espacio en blanco, pero al seleccionarla y reiniciar el autopiloto se puede comprobar que se está ejecutando el nuevo driver observando el registro como se ve en \cref{fig:missionplanner-log}.
 
@@ -121,11 +121,42 @@ Durante las pruebas se descubrió un nuevo posible problema, como ha sido descri
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.4\textwidth]{hitl-plugin-1.png}
-    \caption{Primera versión de plug-in ``PIL'' para X-Plane}
+    \caption{Primera versión de plug-in ``HITL'' para X-Plane}
     \label{fig:hitl-plugin-1}
 \end{figure}
 
-El puerto serial al que el plug-in de X-Plane envía los datos no es el del autopiloto, en un computador se accede a puerto serial por USB y los sistemas inerciales externos no son USB, sino que utilizan dos pines ``RX'' y ``TX'' de entrada y salida. Por esto para completar la implementación del sistema inercial externo ficticio se utiliza otro microcontrolador que reenviara los mensajes desde X-Plane hasta el autopiloto y viceversa, como se visualiza en \cref{fig:plugin}. En este caso se utiliza una Raspberry Pi Pico donde se configuran dos interfaces serial, una por USB y otra por los pines GPIO 4 y 5 ubicados como se ve en \cref{fig:pico-pins}. El puerto serial que utilizara el autopiloto se configura en los parámetros accesibles en Mission Planner como se ve en \cref{{fig:missionplanner-params-serial}}, donde ``Serial 2'' hace referencia al puerto serial 2 que está en cada autopiloto asignado a ciertos pines indicados por alguna etiqueta en la carcasa, como se puede observar en el Pixhawk en \cref{fig:pixhawk-ports} donde seria ``Telem 2''.
+El plug-in proporciona lecturas de sensor ficticio y la actitud de la aeronave por medio de la interfaz Serial. En primera instancia el dispositivo Serial seleccionado en el plug-in es un Raspberry Pi Pico conectado al computador por USB el cual retransmite la información al autopiloto también por Serial por uno de los puertos de telemetría como se observa en \cref{fig:pi-pixhawk4}. El programa cargado en el microcontrolador (utilizando el entorno de desarrollo Arduino IDE 2) solo realiza la tarea de retransmitir los datos recibidos por Serial USB a Serial por los pines GPIO 4 y 5 como se puede observar en \cref{fig:pico-pins} y el código para cumplir la función es \cref{lst:serial-passthrough}
+
+\begin{listing}[h]
+    \begin{minted}[frame=single]{C}
+UART Serial2(4, 5, NC, NC);
+void setup() {
+    Serial.begin(115200);
+    Serial2.begin(115200);
+}
+void loop() {
+    if (Serial.available()) {
+        Serial2.write(Serial.read());
+    }
+    if (Serial2.available()) {
+        Serial.write(Serial2.read());
+    }
+}
+    \end{minted}
+    \caption{Retransmisor Serial}
+    \label{lst:serial-passthrough}
+\end{listing}
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pi-pixhawk4.jpeg}
+    \caption{Raspberry Pi Pico enviando lecturas de sensor y actitud a Pixhawk 4}
+    \label{fig:pi-pixhawk4}
+\end{figure}
+
+El puerto serial al que el plug-in de X-Plane envía los datos no es el del autopiloto, en un computador se accede a puerto serial por USB y los sistemas inerciales externos no son USB, sino que utilizan dos pines ``RX'' y ``TX'' de entrada y salida. Por esto para completar la implementación del sistema inercial externo ficticio se utiliza otro microcontrolador que reenviara los mensajes desde X-Plane hasta el autopiloto y viceversa, como se visualiza en \cref{fig:plugin}. En este caso se utiliza una Raspberry Pi Pico donde se configuran dos interfaces serial, una por USB y otra por los pines GPIO 4 y 5 ubicados como se ve en  El puerto serial que utilizara el autopiloto se configura en los parámetros accesibles en Mission Planner como se ve en \cref{{fig:missionplanner-params-serial}}, donde ``Serial 2'' hace referencia al puerto serial 2 que está en cada autopiloto asignado a ciertos pines indicados por alguna etiqueta en la carcasa, como se puede observar en el Pixhawk en \cref{fig:pixhawk-ports} donde seria ``Telem 2''.
 
 \begin{figure}[h]
     \centering
@@ -161,7 +192,7 @@ Con todo configurado y conectado como en \cref{fig:setup} se logra comprobar que
     \centering
     \includegraphics[width=0.6\textwidth]{xplane-qgroundcontrol.png}
     \caption{Lecturas de inclinación y orientación en QGroundControl}
-    \label{fig:qgroundcontrol}
+    \label{fig:qgroundcontrol2}
 \end{figure}
 
 \subsection{Ejecución de acciones de control en X-Plane}
