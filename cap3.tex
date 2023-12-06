@@ -487,7 +487,7 @@ Otra prueba fue compilar el plug-in para versiones más actualizadas de X-Plane 
 
 \textbf{Eliminación del microcontrolador intermediario}
 
-Durante el desarrollo se descubrió que el autopiloto Pixhawk 4 abre dos puertos serial por la misma conexión USB, el primer puerto es el que se ha estado utilizando para conectarse por Mission Planner, el segundo se puede configurar para cualquier uso por medio de los parámetros y en Pixhawk 4 corresponde al puerto serial 7. Esto elimina la necesidad del Raspberry retransmisor lo cual es bastante conveniente.
+Durante el desarrollo se descubrió que el autopiloto Pixhawk 4 abre dos puertos serial por la misma conexión USB, el primer puerto es el que se ha estado utilizando para conectarse por Mission Planner, el segundo se puede configurar para cualquier uso por medio de los parámetros y en Pixhawk 4 corresponde al puerto serial 7, si se configura este puerto como sistema de estimación de actitud externo el plug-in es capaz de conectarse y enviar información. Esto elimina la necesidad del Raspberry retransmisor lo cual es bastante conveniente.
 
 \textbf{Problemas al teletransportar la aeronave}
 
@@ -495,4 +495,4 @@ Al seleccionar un nuevo aeropuerto, cambiar la aeronave o luego de un choque fat
 
 \subsection{Puesta en marcha}
 
-La primera versión del entorno de desarrollo compuesto por el plug-in y driver cumple para continuar pruebas posteriores de modificaciones que se hagan en ArduPilot y también promete ser una gran herramienta de aprendizaje en el funcionamiento de un autopiloto y el uso de Mission Planner. Poner en marcha el entorno en un computador que no sea el de desarrollo consiste en descargar el plug-in para X-Plane desde el repositorio en GitHub \cite{xplane-hitl-plugin} y descargar el firmware para el autopiloto que se tenga disponible también en el repositorio correspondiente \cite{ap-hitl-fork} y programarlo con Mission Planner.
+La primera versión del entorno de desarrollo compuesto por el plug-in y driver cumple para continuar pruebas de modificaciones posteriores que se hagan en ArduPilot y también promete ser una gran herramienta de aprendizaje en el funcionamiento de un autopiloto y el uso de Mission Planner. Poner en marcha el entorno en un computador que no sea el de desarrollo consiste en descargar el plug-in para X-Plane desde el repositorio en GitHub \cite{xplane-hitl-plugin} y descargar el firmware del autopiloto que se tenga disponible también en el repositorio correspondiente \cite{ap-hitl-fork} para programarlo con Mission Planner.
