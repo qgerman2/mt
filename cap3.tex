@@ -398,4 +398,101 @@ Con estos cambios el autopiloto ya es capaz de controlar las superficies de cont
 
 \subsection{Calibración de acelerómetro y magnetómetro}
 
-guita facil
+Antes de que ArduPilot permita armar la aeronave y así encender el motor es necesario realizar la calibración del acelerómetro y magnetómetro. El proceso consiste en ajustar la orientación de la aeronave paso a paso siguiendo las instrucciones en Mission Planner \cite{arduplane-accelerometer}.
+
+Para el acelerómetro en la pestaña ``Accel Calibration'' se muestran instrucciones en pantalla como se observa en \cref{fig:ap-cal}. Se agregó la función de calibración en el plug-in para X-Plane que permite orientar la aeronave como se indica en Mission Planner, por medio de botones en la interfaz gráfica como se ve en \cref{fig:xplane-cal-level,fig:xplane-cal-left}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.52\textwidth]{ap-cal.png}
+    \caption{Instrucciones de calibración de acelerómetro}
+    \label{fig:ap-cal}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{xplane-cal-level.png}
+    \caption{Aeronave en calibración nivelada}
+    \label{fig:xplane-cal-level}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{xplane-cal-left.png}
+    \caption{Aeronave en calibración inclinada a la izquierda}
+    \label{fig:xplane-cal-left}
+\end{figure}
+
+Elevar la aeronave y mantenerla quieta se logra sobreescribiendo todas las velocidades a 0, estableciendo posición y orientación específica y repetir ese proceso cada fotograma. Un problema que surge con este método es que la aceleración reportada por los Dataref es 0, siendo que debería ser un vector indicando la aceleración de gravedad. Se soluciona enviando por X-Plane el vector esperado, puesto que se conoce la orientación de la aeronave y la dirección que es hacia abajo en el marco de referencia inercial como está descrito en \cref{lst:accel-fix}.
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de plug-in para X-Plane
+// telemetry.cpp
+// ...
+// Inertial sensor
+if (!Calibration::IsEnabled()) {
+    msg.ins.accel = -state.accel * GRAVITY_MSS;
+} else {
+    Eigen::Vector3f down = { 0, 0, -GRAVITY_MSS };
+    msg.ins.accel = state.rot.conjugate() * down;
+}
+// ...
+    \end{minted}
+    \caption{Vector de acelerómetro enviado por telemetría}
+    \label{lst:accel-fix}
+\end{listing}
+
+La calibración del magnetómetro es similar, se debe orientar la aeronave de la misma manera que durante la calibración del acelerómetro, pero en cada paso se rota el rumbo una vuelta completa \cite{arduplane-compass}. El plug-in de X-Plane incluye un botón para empezar a rotar la aeronave de manera continua con este propósito como se observa en \cref{fig:xplane-cal-level,fig:xplane-cal-left}. De esta forma se logra calibrar el magnetómetro como se ve en \cref{fig:ap-cal-compass}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{ap-cal-compass.png}
+    \caption{Calibración de magnetómetro completa en Mission Planner}
+    \label{fig:ap-cal-compass}
+\end{figure}
+
+Los otros problemas observados en los chequeos de prearmado en \cref{fig:arduplane-not-calibrated} reportan un ``Hardware safety switch'' y ``Radio failsafe on'', estos como su nombre indica son funciones de seguridad presentes en la aeronave y el radiocontrol. Para corregirlo se puede conectar un switch físico al autopiloto en el puerto correspondiente y activarlo, y en la radio desactivar la seguridad de acuerdo a las instrucciones de ArduPilot y la radio especifica. Otra forma es establecer los parámetros \texttt{BRD\_SAFETY\_DEFLT=0} para desactivar el safety switch y \texttt{THR\_FAILSAFE=0} para desactivar la seguridad de la radio. Con todo resuelto es posible armar la aeronave y utilizar Mission Planner tal cual se tratase de una aeronave real.
+
+\subsection{Pruebas en X-Plane}
+
+Conectando un receptor de radio al puerto correspondiente en el Pixhawk 4 se prueban distintas aeronaves en el simulador X-Plane 9 como se observa en \cref{fig:setup}. Entre las aeronaves disponibles por defecto se encuentran el Cessna 172 y un aeromodelo RC los cuales se logran volar de manera satisfactoria en los modos de vuelo estabilizado y en misión autónoma definida por waypoints en Mission Planner como se muestra en \cref{fig:xplane-rc}, incluso sin ajustar ningún parámetro del controlador PID.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{setup.jpeg}
+    \caption{Vuelo con radio en X-Plane 9}
+    \label{fig:setup}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{xplane-rc.png}
+    \caption{Aeronave RC en misión autónoma en X-Plane 9}
+    \label{fig:xplane-rc}
+\end{figure}
+
+En su estado actual el plug-in junto con el firmware modificado tienen potencial de ser utilizados para el aprendizaje del uso general de ArduPilot y Mission Planner, más en comparación con las soluciones SITL porque esta alternativa permite conectar un receptor RC real y realizar un proceso de calibración que emula el real. La continuación de su desarrollo para este propósito consiste en simular los defectos presentes en los sensores en lugar de transmitir lecturas perfectas.
+
+Otra prueba fue compilar el plug-in para versiones más actualizadas de X-Plane como X-Plane 11. El plug-in funciona correctamente en esta versión del simulador abriendo las mismas posibilidades que con X-Plane 9.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{xplane11.png}
+    \caption{Plug-in funcionando en X-Plane 11}
+    \label{fig:xplane11}
+\end{figure}
+
+\subsection{Otros descubrimientos y problemas durante el desarrollo}
+
+\textbf{Eliminación del microcontrolador intermediario}
+
+Durante el desarrollo se descubrió que el autopiloto Pixhawk 4 abre dos puertos serial por la misma conexión USB, el primer puerto es el que se ha estado utilizando para conectarse por Mission Planner, el segundo se puede configurar para cualquier uso por medio de los parámetros y en Pixhawk 4 corresponde al puerto serial 7. Esto elimina la necesidad del Raspberry retransmisor lo cual es bastante conveniente.
+
+\textbf{Problemas al teletransportar la aeronave}
+
+Al seleccionar un nuevo aeropuerto, cambiar la aeronave o luego de un choque fatal X-Plane regenera la aeronave en la pista de aterrizaje independiente de donde se haya encontrado previamente. Este cambio brusco en la posición y orientación confunde al autopiloto el que comienza a reportar errores en la estimación de actitud entre otros. La solución encontrada fue reiniciar internamente las variables del filtro de Kalman integrado en el autopiloto luego de cualquier teletransporte. Realizar esto no es tan fácil, puesto que el autopiloto no incluye una función para hacerlo ni es una situación que ocurriría en la vida real. Reiniciar de manera arbitraria el filtro de Kalman a veces detenía por completo el autopiloto el cual reportaba errores internos críticos luego de ser encendido la próxima vez. Corregir esto fue un proceso de prueba de error restableciendo las variables internas una por una hasta lograr una secuencia que no detuviera el autopiloto, pero que reinicia el filtro.
+
+\subsection{Puesta en marcha}
+
+La primera versión del entorno de desarrollo compuesto por el plug-in y driver cumple para continuar pruebas posteriores de modificaciones que se hagan en ArduPilot y también promete ser una gran herramienta de aprendizaje en el funcionamiento de un autopiloto y el uso de Mission Planner. Poner en marcha el entorno en un computador que no sea el de desarrollo consiste en descargar el plug-in para X-Plane desde el repositorio en GitHub \cite{xplane-hitl-plugin} y descargar el firmware para el autopiloto que se tenga disponible también en el repositorio correspondiente \cite{ap-hitl-fork} y programarlo con Mission Planner.

@@ -47,3 +47,16 @@ Missing
 Mandatory
 SETUP
 Compass
+Accel
+Calibration
+safety
+switch
+failsafe
+on
+Cessna
+RC
+waypoints
+PID
+SITL
+teletransportar
+teletransporte
