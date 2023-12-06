@@ -75,9 +75,9 @@ El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk dispo
     \label{fig:pixhawk-ports}
 \end{figure}
 
-La siguiente alternativa evaluada es enviar lecturas de sensores generadas con algún protocolo propio por alguno de los puertos serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe de alguna forma programar ArduPilot.
+La siguiente alternativa evaluada es enviar lecturas de sensores generadas con un protocolo propio por alguno de los puertos serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe programar, recompilar y cargar el nuevo firmware al autopiloto.
 
-Primero se consideró aprovechar el motor de scripting en Lua para esta tarea. La ventaja de utilizar scripts es que no necesita modificar el código fuente de ArduPilot y por lo tanto tampoco reprogramar por completo el microcontrolador del autopiloto, ya que los scripts se cargan de manera dinámica desde la tarjeta SD. Lamentablemente los scripts no cuentan con la funcionalidad de poder generar lecturas de sensores críticos como son el IMU o GPS por lo que se descarta esta opción.
+Primero se consideró aprovechar el motor de scripting en Lua para esta tarea. La ventaja de utilizar scripts es que no necesita modificar el código fuente de ArduPilot y por lo tanto tampoco reprogramar por completo el microcontrolador, ya que los scripts se cargan de manera dinámica desde la tarjeta SD. Lamentablemente los scripts no cuentan con la funcionalidad de poder generar lecturas de sensores críticos como son el IMU o GPS por lo que se descarta esta opción.
 
 Estudiando el código fuente de ArduPilot se identificó que este soporta sistemas de estimación de actitud externos o ``External Attitude Heading Reference System'', están compuestos por una combinación de sensores y un procesador que realiza su propia fusión exportando un cuaternión describiendo la actitud junto con posición y velocidad en un marco de referencia inercial. Actualmente ArduPilot soporta tres sistemas de estimación de actitud externos disponibles en el mercado \cite{ap-eahrs}.
 
@@ -87,9 +87,9 @@ Estudiando el código fuente de ArduPilot se identificó que este soporta sistem
     \item VectorNav VN-100 AHRS
 \end{itemize}
 
-ArduPilot ofrece la opción de utilizar la estimación de actitud producida por el sistema externo directamente, o de forma alternativa solo recibir las mediciones de los sensores y por medio de un filtro de Kalman generar su propia estimación. En el contexto del proyecto ambas opciones son útiles, el que ArduPilot reciba la información de actitud perfecta de X-Plane permite descartar esta variable de los problemas que se vayan a producir durante las pruebas del controlador personalizado. Y el solo incorporar las lecturas de sensores y que ArduPilot realice su propia estimación con filtro de Kalman es lo que este haría en un vuelo real.
+ArduPilot ofrece la opción de utilizar la estimación de actitud producida por el sistema externo directamente, o alternativamente solo recibir las mediciones de los sensores y por medio de un filtro de Kalman generar su propia estimación. En el contexto del proyecto ambas opciones son útiles, el que ArduPilot reciba la información de actitud perfecta de X-Plane permite descartar esta variable de los problemas que se vayan a producir durante las pruebas del controlador personalizado. Y el solo incorporar las lecturas de sensores y que ArduPilot realice su propia estimación con filtro de Kalman es lo que este haría en un vuelo real.
 
-Se decidió escribir un driver para un nuevo sistema de estimación de actitud externo ficticio el cual recibirá lecturas de sensor y actitud por medio de conexión serial, que además entregara por esta misma conexión la respuesta de la acción de control que esté produciendo ArduPilot como salidas de servo. La creación de este nuevo driver en el lado de ArduPilot implica que se debe modificar el código fuente, en \cref{fig:eahrs} se pueden observar los archivos que componen los sistemas de estimación de actitud externos, la clase principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}. El código fuente del nuevo driver se escribió en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un autopiloto de pruebas.
+Se decidió escribir un driver para un nuevo sistema de estimación de actitud externo ficticio el cual recibirá lecturas de sensor y actitud por medio de conexión serial, que además entregara por esta misma conexión la respuesta de la acción de control que esté produciendo ArduPilot como salidas de servo. La creación de este nuevo driver en el lado de ArduPilot implica que se debe modificar el código fuente, en \cref{fig:eahrs} se pueden observar los archivos que componen los sistemas de estimación de actitud externos existentes. La interfaz principal \texttt{AP\_ExternalAHRS} y la implementación de los sistemas ``MicroStrain'' y ``VectorNav'', en los archivos \texttt{AP\_ExternalAHRS\_MicroStrain5} y \texttt{AP\_ExternalAHRS\_VectorNav}. El código fuente del nuevo driver se escribió en los archivos \texttt{AP\_ExternalAHRS\_HITL}, hasta este punto con la implementación más básica que lograse compilar y ser cargada en un autopiloto de pruebas.
 
 \begin{figure}[h]
     \centering
@@ -98,7 +98,7 @@ Se decidió escribir un driver para un nuevo sistema de estimación de actitud e
     \label{fig:eahrs}
 \end{figure}
 
-El proceso de compilación de ArduPilot está documentado \cite{ap-build} y se puede cargar al autopiloto por USB de la misma forma que actualizando firmware de ArduPilot oficial. En el laboratorio de técnicas aeroespaciales se proporcionó de un autopiloto Pixhawk 4 soportado de manera oficial por los desarrolladores de ArduPilot \cite{pixhawk4}. Para realizar la modificación del firmware de manera ordenada se creó un ``fork'' de la versión estable de ArduPlane en el momento de escritura del informe 4.4.2, sobre la que se escribe el nuevo driver y se lleva un registro de cada cambio en el repositorio en GitHub \cite{ap-hitl-fork}.
+El proceso de compilación de ArduPilot está documentado \cite{ap-build} y los firmware modificados se pueden cargar al autopiloto por USB de la misma forma que el oficial. En el laboratorio de técnicas aeroespaciales se proporcionó de un autopiloto Pixhawk 4 soportado por los desarrolladores de ArduPilot \cite{pixhawk4}. Para realizar la modificación del firmware de manera ordenada se creó un ``fork'' de la versión estable de ArduPlane en el momento de escritura del informe 4.4.2, sobre la que se escribe el nuevo driver y se lleva un registro de cada cambio en el repositorio en GitHub \cite{ap-hitl-fork}.
 
 Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mission Planner se ajusta el parámetro que indica que se utilizara un sistema inercial externo como se puede observar en \cref{fig:missionplanner-params}. Mission Planner no reconoce el nombre de la nueva opción correctamente mostrando un espacio en blanco, pero al seleccionarla y reiniciar el autopiloto se puede comprobar que se está ejecutando el nuevo driver observando el registro como se ve en \cref{fig:missionplanner-log}.
 
@@ -116,7 +116,7 @@ Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mis
     \label{fig:missionplanner-log}
 \end{figure}
 
-Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación producto de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC o XPUIPC pueden leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden llegar a entregar lecturas a una frecuencia de hasta 1000 Hz como lo hace el MPU-6000. Además de la incerteza de la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para asegurar la máxima frecuencia de datos posible se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio en GitHub de la misma manera que para el ``fork'' de ArduPilot \cite{xplane-hitl-plugin}.
+Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación producto de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC o XPUIPC pueden leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden llegar a entregar lecturas a una frecuencia de hasta 1000 Hz como lo hace el MPU-6000. Además de la incerteza de la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para asegurar la máxima frecuencia de datos posible se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio en GitHub \cite{xplane-hitl-plugin} de la misma manera que para el ``fork'' de ArduPilot.
 
 \begin{figure}[h]
     \centering
@@ -125,7 +125,7 @@ Durante las pruebas se descubrió un nuevo posible problema, como ha sido descri
     \label{fig:hitl-plugin-1}
 \end{figure}
 
-El desarrollo de plug-ins para X-Plane se realiza programando instrucciones en C++ y enlazando el SDK (Software Development Kit) que da acceso a una selección de librerías útiles para interactuar con el simulador \cite{xplane-plugin-dev}. El entorno de desarrollo en específico para este trabajo es Visual Studio Code con el compilador de Microsoft MSVC \cite{vscode-cpp}, los archivos disponibles en el repositorio incluyen la configuración (en el archivo \texttt{.vscode/tasks.json}) para poder compilar el plug-in en el editor de texto si se ha instalado el mismo compilador.
+El desarrollo de plug-ins para X-Plane se realiza programando instrucciones en C++ y enlazando el SDK (Software Development Kit) que da acceso a una selección de librerías útiles para interactuar con el simulador \cite{xplane-plugin-dev}. El entorno de desarrollo en específico para este trabajo es Visual Studio Code con el compilador de Microsoft MSVC \cite{vscode-cpp}, los archivos disponibles en el repositorio incluyen la configuración (en el archivo \texttt{.vscode/tasks.json}) para poder compilar el plug-in en el editor de texto si se ha instalado MSVC.
 
 El plug-in proporciona lecturas de sensor ficticio y la actitud de la aeronave por medio de la interfaz serial. En primera instancia el dispositivo serial seleccionado en el plug-in es un Raspberry Pi Pico conectado al computador por USB el cual retransmite la información al autopiloto también por serial por uno de los puertos de telemetría como se observa en \cref{fig:pi-pixhawk4,fig:plugin}. El programa cargado en el microcontrolador (utilizando el entorno de desarrollo Arduino IDE 2) solo realiza la tarea de retransmitir los datos recibidos por serial USB a serial por los pines GPIO 4 y 5 y el código para cumplir la función es \cref{lst:serial-passthrough}
 
@@ -163,7 +163,7 @@ void loop() {
     \label{fig:plugin}
 \end{figure}
 
-Para terminar esta implementación de la comunicación, se configura el puerto de telemetría donde está conectado el Raspberry como interfaz para sistema de estimación de actitud externo, como se observa en \cref{fig:missionplanner-params-serial} seleccionando la opción ``AHRS''.
+Para terminar de conectar el Raspberry con el autopiloto, se configura el puerto de telemetría donde está conectado el microcontrolador como interfaz para sistema de estimación de actitud externo, como se observa en \cref{fig:missionplanner-params-serial} seleccionando la opción ``AHRS''.
 
 \begin{figure}[h]
     \centering
@@ -181,6 +181,221 @@ Con todo configurado se logra comprobar que la información de X-Plane está sie
     \label{fig:qgroundcontrol2}
 \end{figure}
 
+Como mencionado anteriormente los sistemas de estimación de actitud externos ofrecen dos tipos de información, lecturas de sensores y estimación de la actitud exportada como un cuaternión. La manera en que ArduPilot espera recibir esta información está descrita en las estructuras de datos que se observan en \cref{lst:ap-structs-1,lst:ap-structs-2}.
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de ArduPilot
+// libraries/AP_ExternalAHRS/AP_ExternalAHRS.h
+typedef struct {
+    Vector3f accel;    // m/s2
+    Vector3f gyro;     // rad/s 
+    float temperature; // C
+} ins_data_message_t;
+
+typedef struct {
+    uint8_t instance;
+    float pressure_pa; // Pa
+    float temperature; // C
+} baro_data_message_t;
+
+typedef struct {
+    Vector3f field;
+} mag_data_message_t;
+
+typedef struct {
+    uint16_t gps_week;
+    uint32_t ms_tow;
+    uint8_t fix_type;
+    uint8_t satellites_in_view;
+    float horizontal_pos_accuracy;
+    float vertical_pos_accuracy;
+    float horizontal_vel_accuracy;
+    float hdop;
+    float vdop;
+    int32_t longitude;    // deg
+    int32_t latitude;     // deg
+    int32_t msl_altitude; // cm
+    float ned_vel_north;  // m/s
+    float ned_vel_east;   // m/s
+    float ned_vel_down;   // m/s
+} gps_data_message_t;
+    \end{minted}
+    \caption{Estructuras de datos para lecturas de sensor}
+    \label{lst:ap-structs-1}
+\end{listing}
+
+Las estructuras de datos de lecturas de sensor corresponden a las de acelerómetro y giroscopio, barómetro, magnetómetro y GPS como aparecen respectivamente. Se debe obtener esta información de X-Plane por medio del plug-in y la forma en que este recopila los datos de la simulación es accediendo a los Dataref continuamente con la librería ``XPLMDataAccess'' del SDK \cite{xplane-dataref}, para la primera implementación del programa los Dataref utilizados se describen en \cref{lst:xplane-datarefs}. Los Dataref son variables internas de X-Plane que permiten acceder y modificar el estado de todos los componentes de la simulación, estos están disponibles de manera que desarrolladores pueden hacer uso fácilmente gracias a la extensa documentación \cite{xplane-dataref-ref}. La característica de enviar lecturas como telemetría por serial en el plug-in funciona en dos pasos, el primero es recopilar la información con los Dataref y el segundo es procesar los datos ya sea convertir unidades o generar la lectura del magnetómetro para luego enviarlos por serial como se observa en \cref{lst:telemetry-loop}, este proceso se repite en cada fotograma.
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de plug-in para X-Plane
+// telemetry.cpp
+XPLMDataRef accel_x = XPLMFindDataRef("sim/flightmodel/forces/g_axil");
+XPLMDataRef accel_y = XPLMFindDataRef("sim/flightmodel/forces/g_side");
+XPLMDataRef accel_z = XPLMFindDataRef("sim/flightmodel/forces/g_nrml");
+XPLMDataRef gyro_x = XPLMFindDataRef("sim/flightmodel/position/P");
+XPLMDataRef gyro_y = XPLMFindDataRef("sim/flightmodel/position/Q");
+XPLMDataRef gyro_z = XPLMFindDataRef("sim/flightmodel/position/R");
+XPLMDataRef quat = XPLMFindDataRef("sim/flightmodel/position/q");
+XPLMDataRef baro = XPLMFindDataRef("sim/weather/barometer_current_inhg");
+XPLMDataRef temperature = XPLMFindDataRef("sim/weather/temperature_ambient_c");
+XPLMDataRef latitude = XPLMFindDataRef("sim/flightmodel/position/latitude");
+XPLMDataRef longitude = XPLMFindDataRef("sim/flightmodel/position/longitude");
+XPLMDataRef elevation = XPLMFindDataRef("sim/flightmodel/position/elevation");
+XPLMDataRef local_vx = XPLMFindDataRef("sim/flightmodel/position/local_vx");
+XPLMDataRef local_vy = XPLMFindDataRef("sim/flightmodel/position/local_vy");
+XPLMDataRef local_vz = XPLMFindDataRef("sim/flightmodel/position/local_vz");
+    \end{minted}
+    \caption{Datarefs utilizados para telemetría}
+    \label{lst:xplane-datarefs}
+\end{listing}
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de plug-in para X-Plane
+// telemetry.cpp
+void Telemetry::Loop(float dt) {
+    UpdateState();  // Recopilar información de Datarefs
+    ProcessState(); // Procesar y enviar por serial
+}
+    \end{minted}
+    \caption{Loop de telemetría en plug-in para X-Plane}
+    \label{lst:telemetry-loop}
+\end{listing}
+
+La lectura del magnetómetro no se puede generar de manera realista utilizando solo las librerías en la SDK de X-Plane. Un magnetómetro entrega un vector que apunta al norte magnético de la tierra con magnitud proporcional a la ``intensidad'' del campo, el cual se puede describir en términos de la ``declinación'' e ``inclinación'' que son los ángulos que forma este vector respecto al norte geográfico como se observa en \cref{fig:magnetic-geographic-north}. X-Plane solo ofrece acceso a la declinación por medio del Dataref \texttt{sim\_flightmodel\_position\_magnetic\_variation}, no a la inclinación ni a la intensidad del campo. Sin embargo es posible obtener la inclinación e intensidad con librerías externas \cite{geomag}, puesto que el campo magnético de la tierra cambia muy lentamente. Durante el desarrollo del plug-in se realizaron pruebas entregando como lectura un vector que apunta perfectamente al norte geográfico y ArduPilot funciono correctamente. Hasta que no se retrabaje la implementación para hacerla más realista esta solución es suficiente.
+
+\begin{figure}[h]
+    \centering
+    \includesvg[width=0.8\textwidth]{XYZ-DIS_magnetic_field_coordinates.svg}
+    \caption{Diferencia entre norte magnético y geográfico}
+    \label{fig:magnetic-geographic-north}
+\end{figure}
+
+Con ArduPilot recibiendo las lecturas de sensores de la manera esperada se logra observar correctamente el estado de la aeronave en Mission Planner, además el filtro de Kalman incluido en el autopiloto logra realizar la estimación de actitud exitosamente como se observa en \cref{fig:mission-planner-ok1}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{mission-planner-ok1.png}
+    \caption{Aeronave en Mission Planner}
+    \label{fig:mission-planner-ok1}
+\end{figure}
+
+La estructura de datos que describe la posición y actitud de la aeronave incluye varias de las mismas variables que se entregan como lecturas de sensor, las excepciones son el cuaternión \texttt{quat} que describe la orientación y la posición \texttt{origin} que indica la posición inicial de la aeronave (antes de iniciar un despegue o una misión automatizada). La importante es el cuaternión el cual se obtiene directamente de X-Plane que de utilizarse permite omitir la necesidad de estimar la variable. Esta opción se puede activar modificando el parámetro \texttt{AHRS\_EKF\_TYPE} en Mission Planner como se ve en \cref{fig:missionplanner-params-ekf} seleccionando ``ExternalAHRS'', a diferencia de ``Enable EKF3'' que activa el filtro de Kalman del autopiloto recibiendo de X-Plane solo lecturas de sensor.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{missionplanner-params-ekf.png}
+    \caption{Configuración de estimación de posición y actitud en Mission Planner}
+    \label{fig:missionplanner-params-ekf}
+\end{figure}
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de ArduPilot
+// libraries/AP_ExternalAHRS/AP_ExternalAHRS.h
+struct state_t {
+    HAL_Semaphore sem;
+    Vector3f accel;    // m/s2
+    Vector3f gyro;     // rad/s
+    Quaternion quat;
+    Location location; // [hor: deg, deg, ver: cm]
+    Vector3f velocity; // m/s  
+    Location origin;   // [hor: deg, deg, ver: cm]
+    bool have_quaternion;
+    bool have_origin;
+    bool have_location;
+    bool have_velocity;
+} state;
+    \end{minted}
+    \caption{Estructura de datos para posición y actitud}
+    \label{lst:ap-structs-2}
+\end{listing}
+
+Si bien las lecturas de X-Plane llegan correctamente al autopiloto, estas no coinciden con las lecturas que producen los sensores internos del autopiloto. El Pixhawk 4 incluye acelerómetro, giroscopio, barómetro y magnetómetro los cuales son necesario desactivar para que no interfieran, el proceso para hacerlo se realiza por medio de modificación de parámetros en Mission Planner y configuración en una de las pestañas para el magnetómetro. A partir de una configuración por defecto de ArduPlane 4.4.2 los cambios a realizar son los siguientes.
+
+\begin{enumerate}
+    \item \textbf{Activar sistema de estimación de actitud externo.} \\
+          Configurar los parámetros \texttt{EAHRS\_TYPE=3}, \texttt{SERIALX\_BAUD=115200} y \texttt{SERIALX\_PROTOCOL=36} de acuerdo al puerto serial correspondiente y reiniciar el autopiloto, asegurarse que en el registro aparezca habilitado el driver HITL.
+    \item \textbf{Desactivar acelerómetro y giroscopio interno.} \\
+          Configurar el parámetro \texttt{INS\_ENABLE\_MASK=1}.
+    \item \textbf{Desactivar magnetómetro interno.} \\
+          Configurar el parámetro \texttt{COMPASS\_TYPEMASK=252927}, desactivando todos los drivers excepto por el del sistema externo. Reiniciar el autopiloto e ir a la pestaña ``SETUP'' y en la sección ``Mandatory Hardware / Compass'' presionar ``Remove Missing'', reiniciar.
+    \item \textbf{Activar GPS externo.} \\
+          Configurar el parámetro \texttt{GPS\_TYPE=21}.
+\end{enumerate}
+
 \subsection{Ejecución de acciones de control en X-Plane}
 
-[todo]
+Con la telemetría funcionando es posible habilitar las opciones de ArduPilot para ejecutar misiones automatizadas o las asistencias de estabilización de vuelo, siempre y cuando se tenga acceso a las superficies de control y potencia del motor. Las acciones de control de ArduPilot son exportadas como señales PWM de servo, para ArduPlane las salidas de servo por defecto son las superficies de control elevador, timón, alerón y el acelerador del motor \cite{arduplane-servo}. Internamente en el código fuente de ArduPilot los valores de salida se pueden obtener desde la clase \texttt{SRV\_Channels}, por lo que por medio de esta se realiza la lectura y posterior transmisión de información desde el autopiloto hacia X-Plane como se observa en \cref{lst:hitl-rc}.
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de driver personalizado en ArduPilot
+// libraries/AP_ExternalAHRS/AP_ExternalAHRS_HITL.cpp
+void AP_ExternalAHRS_HITL::send_rc() {
+    if (reset_step > 0) {
+        rc_msg.state = reset_step + 1;
+    } else {
+        if (AP::arming().is_armed_and_safety_off()) {
+            rc_msg.state = 1;
+        } else {
+            rc_msg.state = 0;
+        }
+    }
+    rc_msg.aileron = SRV_Channels::get_output_norm(SRV_Channel::k_aileron);
+    rc_msg.elevator = SRV_Channels::get_output_norm(SRV_Channel::k_elevator);
+    rc_msg.rudder = SRV_Channels::get_output_norm(SRV_Channel::k_rudder);
+    rc_msg.throttle = SRV_Channels::get_output_norm(SRV_Channel::k_throttle);
+    rc_msg.ahrs_count = ahrs_count_send;
+    uart->write(reinterpret_cast<uint8_t *>(&header), sizeof(header));
+    uart->write(reinterpret_cast<uint8_t *>(&rc_msg), sizeof(rc_msg));
+}
+    \end{minted}
+    \caption{Lectura y transmisión de salida de servos por serial}
+    \label{lst:hitl-rc}
+\end{listing}
+
+Con los datos recibidos en el plug-in de X-Plane, se desactivan los controles convencionales del simulador que pueden ser el mouse o joysticks para las superficies de control y los motores. En su lugar se activa el control por medio de los Datarefs dedicados para esta aplicación como se observa en \cref{lst:xplane-plugin-rc}.
+
+\begin{listing}[h]
+    \begin{minted}[frame=single,fontsize=\small]{C}
+// Código de plug-in para X-Plane
+// remote.cpp
+// ...
+XPLMDataRef or_roll = XPLMFindDataRef("sim/operation/override/override_joystick_roll");
+XPLMDataRef or_pitch = XPLMFindDataRef("sim/operation/override/override_joystick_pitch");
+XPLMDataRef or_yaw = XPLMFindDataRef("sim/operation/override/override_joystick_heading");
+XPLMDataRef or_throttle = XPLMFindDataRef("sim/operation/override/override_throttles");
+XPLMDataRef roll = XPLMFindDataRef("sim/joystick/yoke_roll_ratio");
+XPLMDataRef pitch = XPLMFindDataRef("sim/joystick/yoke_pitch_ratio");
+XPLMDataRef yaw = XPLMFindDataRef("sim/joystick/yoke_heading_ratio");
+XPLMDataRef throttle = XPLMFindDataRef("sim/flightmodel/engine/ENGN_thro_use");
+// ...
+if (override_joy) {
+    XPLMSetDataf(DataRef::roll, std::clamp(servo_msg.aileron, -1.0f, 1.0f));
+    XPLMSetDataf(DataRef::pitch, std::clamp(servo_msg.elevator, -1.0f, 1.0f));
+    XPLMSetDataf(DataRef::yaw, std::clamp(servo_msg.rudder, -1.0f, 1.0f));
+    float throttle[16];
+    std::fill_n(throttle, 16, std::clamp(servo_msg.throttle, 0.0f, 1.0f));
+    XPLMSetDatavf(DataRef::throttle, throttle, 0, 16);
+}
+// ...
+    \end{minted}
+    \caption{Datarefs para control de aeronave en plug-in de X-Plane}
+    \label{lst:xplane-plugin-rc}
+\end{listing}
+
+Con estos cambios el autopiloto ya es capaz de controlar las superficies de control y el motor de la aeronave, sin embargo no es capaz de ``armar”, ya que aún se reportan problemas, estos son que se encuentran descalibrados el acelerómetro y magnetómetro entre otros como se observa en \cref{fig:arduplane-not-calibrated}. Para poder continuar es necesario calibrar estos sensores de la misma manera que se haría en una aeronave de verdad.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.35\textwidth]{arduplane-not-calibrated.png}
+    \caption{Chequeos de prearmado}
+    \label{fig:arduplane-not-calibrated}
+\end{figure}
+
+\subsection{Calibración de acelerómetro y magnetómetro}
+
+guita facil

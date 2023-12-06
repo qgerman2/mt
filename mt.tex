@@ -10,18 +10,18 @@
 \usepackage{parskip}
 \usepackage{setspace}
 \onehalfspacing
-\usepackage[hidelinks]{hyperref}
-\usepackage[outputdir=out]{minted}
-\renewcommand{\listingscaption}{Código}
+\usepackage{microtype}
 
-% Figuras
+% Figuras y código
 \usepackage{graphicx}
 \usepackage{svg}
 \graphicspath{{./img/}}
 \svgsetup{inkscapelatex=false}
 \svgsetup{inkscapearea=page}
+\usepackage[outputdir=out]{minted}
 
 % Referencias
+\usepackage[hidelinks]{hyperref}
 \usepackage[sorting=none]{biblatex}
 \addbibresource{refs.bib}
 \usepackage{csquotes}
@@ -30,6 +30,7 @@
 \crefname{figure}{la Figura}{las Figuras}
 \crefname{table}{la Tabla}{las Tablas}
 \crefname{listing}{el Código}{los Códigos}
+\renewcommand{\listingscaption}{Código}
 
 
 \begin{document}
