@@ -1,6 +1,6 @@
 \chapter{Entorno de desarrollo}
 
-Este capítulo describe el proceso seguido para establecer el entorno de desarrollo, incluyendo los problemas que se encontraron, como se solucionaron y finalmente el resultado obtenido. Este entorno servirá de base para el trabajo posterior en los siguientes capítulos que, como está descrito en la sección de condiciones de diseño, tiene como función principal habilitar la validación del trabajo realizado por medio de la técnica ``Processor-in-Loop''.
+Este capítulo describe el proceso seguido para crear el entorno de desarrollo, incluyendo los problemas que se encontraron, como se solucionaron y finalmente el resultado obtenido. Este entorno servirá de base para el trabajo posterior en los siguientes capítulos que, como está descrito en la sección de condiciones de diseño, tiene como función principal habilitar la validación del trabajo realizado por medio de la técnica ``Hardware-in-the-Loop''.
 
 \section{Selección de autopiloto base}
 
@@ -46,7 +46,7 @@ Los detalles de su funcionamiento están en el informe de proyecto de ingenierí
     \label{fig:inofs-programa-intermediario}
 \end{figure}
 
-Para poder extender el protocolo de comunicación se debe ser capaz de realizar dos funciones, ingresar a ArduPilot el estado de vuelo de X-Plane como respuesta obtenida de sensores, y el ejecutar las acciones de control producidas por ArduPilot en X-Plane. Con estas funciones se puede considerar lista la implementación ``Processor-in-Loop'' y a continuación se describe el proceso para lograr cada una.
+Para poder extender el protocolo de comunicación se debe ser capaz de realizar dos funciones, ingresar a ArduPilot el estado de vuelo de X-Plane como respuesta obtenida de sensores, y el ejecutar las acciones de control producidas por ArduPilot en X-Plane. Con estas funciones se puede considerar lista la implementación ``Hardware-in-the-Loop'' y a continuación se describe el proceso para lograr cada una.
 
 \subsection{Ingresar información de sensores a ArduPilot}
 
@@ -59,7 +59,7 @@ La primera opción a evaluar para poder entregarle a ArduPilot información de s
     \item MEAS MS5611 barometer
 \end{itemize}
 
-Todos son sensores digitales, esto significa que al iniciar el sistema se les entrega alguna opción de configuración con la ayuda de un driver, y luego estos responden con las lecturas en un formato específico para cada sensor en forma de paquetes discretos. Por ejemplo el giroscopio L3GD20H espera que el microcontrolador (en este caso el que esté programado con ArduPilot) haga lecturas a ubicaciones en memoria del giroscopio \cite{gyro-datasheet}. Una de las ubicaciones de memoria en el giroscopio contiene información de sí las lecturas se han visto saturadas o si hay un valor nuevo como se ve en \cref{fig:gyro-health}. Emular cada sensor a una suficiente fidelidad capaz de ``engañar'' a ArduPilot de que está recibiendo lecturas reales es demasiado trabajo, por lo que se decide buscar alternativas.
+Todos son sensores digitales, esto significa que al iniciar el sistema se les entrega alguna opción de configuración con la ayuda de un driver, y luego estos responden con las lecturas en un formato específico para cada sensor en forma de paquetes discretos. Por ejemplo el giroscopio L3GD20H espera que el microcontrolador (en este caso el que esté programado con ArduPilot) haga lecturas a ubicaciones en memoria del giroscopio \cite{gyro-datasheet}. Una de las ubicaciones de memoria en el giroscopio contiene información de sí las lecturas se han visto saturadas o si hay un valor nuevo como se ve en \cref{fig:gyro-health}. Emular cada sensor a una suficiente fidelidad capaz de ``engañar'' a ArduPilot de que está recibiendo lecturas reales es muy complejo, por lo que se decide buscar alternativas.
 
 \begin{figure}[h]
     \centering
@@ -103,7 +103,7 @@ Se decidió escribir un driver para un nuevo sistema de estimación de actitud e
 
 El proceso de compilación de ArduPilot está documentado \cite{ap-build} y los firmware modificados se pueden cargar al autopiloto por USB de la misma forma que el oficial. En el laboratorio de técnicas aeroespaciales se proporcionó de un autopiloto Pixhawk 4 soportado por los desarrolladores de ArduPilot \cite{pixhawk4}. Para realizar la modificación del firmware de manera ordenada se creó un ``fork'' de la versión estable de ArduPlane en el momento de escritura del informe 4.4.2, sobre la que se escribe el nuevo driver y se lleva un registro de cada cambio en el repositorio en GitHub \cite{ap-hitl-fork}.
 
-Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mission Planner se ajusta el parámetro que indica que se utilizara un sistema inercial externo como se puede observar en \cref{fig:missionplanner-params}. Mission Planner no reconoce el nombre de la nueva opción correctamente mostrando un espacio en blanco, pero al seleccionarla y reiniciar el autopiloto se puede comprobar que se está ejecutando el nuevo driver observando el registro como se ve en \cref{fig:missionplanner-log}.
+Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mission Planner se ajusta el parámetro que indica que se utilizará un sistema inercial externo como se puede observar en \cref{fig:missionplanner-params}. Mission Planner no reconoce el nombre de la nueva opción correctamente mostrando un espacio en blanco, pero al seleccionarla y reiniciar el autopiloto se puede comprobar que se está ejecutando el nuevo driver observando el registro como se ve en \cref{fig:missionplanner-log}.
 
 \begin{figure}[h]
     \centering
@@ -119,7 +119,7 @@ Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mis
     \label{fig:missionplanner-log}
 \end{figure}
 
-Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación producto de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC o XPUIPC pueden leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden llegar a entregar lecturas a una frecuencia de hasta 1000 Hz como lo hace el MPU-6000. Además de la incerteza de la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para asegurar la máxima frecuencia de datos posible se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio en GitHub \cite{xplane-hitl-plugin} de la misma manera que para el ``fork'' de ArduPilot.
+Durante las pruebas se descubrió un nuevo posible problema, como ha sido descrito hasta ahora se busca extender el protocolo de comunicación creado en el proyecto de ingeniería, inoFS. Sin embargo existe una limitación producto de su diseño. inoFS en sí extiende FSUIPC, el cual es un plug-in para Microsoft Flight Simulator que permite lectura y escritura arbitraria de variables internas del simulador, XPUIPC es una reimplementación del plug-in compatible con X-Plane que trabaja de la misma forma que FSUIPC. El problema es que la frecuencia a la que FSUIPC o XPUIPC pueden leer información de la simulación no está definida, y los sensores encontrados en los autopilotos pueden llegar a entregar lecturas a una frecuencia de hasta 1000 Hz como lo hace el MPU-6000. Además de la incertidumbre en la velocidad de FSUIPC está la latencia producto de tener que enviar la información a través del programa intermediario. Para asegurar la máxima frecuencia de datos posible se decidió no utilizar inoFS, y en su lugar crear un plug-in específico para X-Plane que envíe información por puerto serial directo luego de cada paso de la simulación, eliminando cualquier retraso posible en el canal de comunicación. Se lleva registro del desarrollo del plug-in en un repositorio en GitHub \cite{xplane-hitl-plugin} de la misma manera que para el ``fork'' de ArduPilot.
 
 \begin{figure}[h]
     \centering
