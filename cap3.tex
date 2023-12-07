@@ -9,18 +9,20 @@ En el laboratorio de técnicas aeroespaciales se cuenta con hardware Pixhawk pro
 \begin{figure}[h]
     \centering
     \includegraphics{hardware-pixhawk.png}
-    \caption{Autopiloto Pixhawk}
+    \caption[Autopiloto Pixhawk.]{Autopiloto Pixhawk.\footnotemark}
     \label{fig:pixhawk1}
 \end{figure}
+\footnotetext{\url{https://docs.px4.io/v1.9.0/en/flight_controller/pixhawk.html}}
 
 El hardware autopiloto Pixhawk se puede programar con otro software distinto al del fabricante, entre aquellas soluciones las que son aplicables según las condiciones de diseño y de código abierto son ArduPilot, iNAV y Paparazzi, además del mismo PX4 \cite{survey}. Revisando a un poco más detalle cada alternativa se puede notar que, iNAV no ofrece opciones de vuelo autónomo avanzadas como aterrizaje automático, que serán de interés en el capítulo de diseño de algoritmos de control. Paparazzi es una opción bastante interesante que si tiene un sistema autónomo completo por medio de archivos ``XML'' con la información del plan de vuelo \cite{paparazzi_flight_plan}, pero no es compatible con el software de control en tierra utilizado por ArduPilot y PX4, siendo Mission Planner y QGroundControl los principales.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\textwidth]{takeoff.jpg}
-    \caption{Software de estación en tierra QGroundControl}
+    \includegraphics[width=0.7\textwidth]{qgroundcontrol.png}
+    \caption[Software de estación en tierra QGroundControl.]{Software de estación en tierra QGroundControl.\footnotemark}
     \label{fig:qgroundcontrol}
 \end{figure}
+\footnotetext{\url{https://dev.px4.io/v1.11_noredirect/en/qgc/}}
 
 PX4 es una opción atractiva ya que ofrece soporte para trabajar con técnicas ``Hardware-in-the-Loop'' con simuladores incluyendo X-Plane \cite{px4-hitl}. Sin embargo, aunque ArduPilot haya deprecado esa opción \cite{ap-hitl} existe más documentación en comparación con PX4 sobre como modificar existentes e implementar nuevos algoritmos de control \cite{ap-custom-controller}. Por esto último se decide en ArduPilot como plataforma de desarrollo.
 
@@ -31,7 +33,7 @@ El protocolo de comunicación desarrollado durante el proyecto de ingeniería ae
 \begin{figure}[h]
     \centering
     \includesvg[width=0.7\textwidth]{diagrama-fssp.svg}
-    \caption{Funcionamiento inoFS}
+    \caption{Funcionamiento inoFS.}
     \label{fig:inofs-diagrama}
 \end{figure}
 
@@ -40,7 +42,7 @@ Los detalles de su funcionamiento están en el informe de proyecto de ingenierí
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{inofs.png}
-    \caption{Programa intermediario de inoFS}
+    \caption{Programa intermediario de inoFS.}
     \label{fig:inofs-programa-intermediario}
 \end{figure}
 
@@ -62,7 +64,7 @@ Todos son sensores digitales, esto significa que al iniciar el sistema se les en
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{gyro-registers.png}
-    \caption{Ubicación en memoria del giroscopio con información de salud de las lecturas}
+    \caption{Ubicación en memoria del giroscopio con información de salud de las lecturas.}
     \label{fig:gyro-health}
 \end{figure}
 
@@ -71,9 +73,10 @@ El hardware autopiloto donde puede funcionar ArduPilot (como es el Pixhawk dispo
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{pixhawk-ports.png}
-    \caption{Puertos en Pixhawk}
+    \caption[Puertos en Pixhawk.]{Puertos en Pixhawk.\footnotemark}
     \label{fig:pixhawk-ports}
 \end{figure}
+\footnotetext{\url{https://docs.px4.io/v1.9.0/en/flight_controller/pixhawk.html}}
 
 La siguiente alternativa evaluada es enviar lecturas de sensores generadas con un protocolo propio por alguno de los puertos serial, y programar ArduPilot para que las interprete como lecturas de un sensor personalizado. Esto último es difícil, porque se debe programar, recompilar y cargar el nuevo firmware al autopiloto.
 
@@ -94,7 +97,7 @@ Se decidió escribir un driver para un nuevo sistema de estimación de actitud e
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.3\textwidth]{eahrs.png}
-    \caption{Archivos de código fuente para sistemas de estimación de actitud externos}
+    \caption{Archivos de código fuente para sistemas de estimación de actitud externos.}
     \label{fig:eahrs}
 \end{figure}
 
@@ -105,14 +108,14 @@ Una vez cargado ArduPilot modificado, con el programa de estación en tierra Mis
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{missionplanner-params.png}
-    \caption{Selección de sistema inercial externo en Mission Planner}
+    \caption{Selección de sistema inercial externo en Mission Planner.}
     \label{fig:missionplanner-params}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.4\textwidth]{missionplanner-log.png}
-    \caption{Registro de inicialización de Mission Planner}
+    \caption{Registro de inicialización de Mission Planner.}
     \label{fig:missionplanner-log}
 \end{figure}
 
@@ -121,7 +124,7 @@ Durante las pruebas se descubrió un nuevo posible problema, como ha sido descri
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.4\textwidth]{hitl-plugin-1.png}
-    \caption{Primera versión de plug-in ``HITL'' para X-Plane}
+    \caption{Primera versión de plug-in ``HITL'' para X-Plane.}
     \label{fig:hitl-plugin-1}
 \end{figure}
 
@@ -152,14 +155,14 @@ void loop() {
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{pi-pixhawk4.jpeg}
-    \caption{Raspberry Pi Pico conectado a Pixhawk 4}
+    \caption{Raspberry Pi Pico conectado a Pixhawk 4.}
     \label{fig:pi-pixhawk4}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includesvg[width=0.7\textwidth]{plugin.svg}
-    \caption{Comunicación entre X-Plane y autopiloto}
+    \caption{Comunicación entre X-Plane y autopiloto.}
     \label{fig:plugin}
 \end{figure}
 
@@ -168,7 +171,7 @@ Para terminar de conectar el Raspberry con el autopiloto, se configura el puerto
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{missionplanner-params-serial.png}
-    \caption{Especificación de función de puerto serial en Mission Planner}
+    \caption{Especificación de función de puerto serial en Mission Planner.}
     \label{fig:missionplanner-params-serial}
 \end{figure}
 
@@ -177,7 +180,7 @@ Con todo configurado se logra comprobar que la información de X-Plane está sie
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{xplane-qgroundcontrol.png}
-    \caption{Lecturas de inclinación y orientación en QGroundControl}
+    \caption{Lecturas de inclinación y orientación en QGroundControl.}
     \label{fig:qgroundcontrol2}
 \end{figure}
 
@@ -269,25 +272,26 @@ La lectura del magnetómetro no se puede generar de manera realista utilizando s
 \begin{figure}[h]
     \centering
     \includesvg[width=0.8\textwidth]{XYZ-DIS_magnetic_field_coordinates.svg}
-    \caption{Diferencia entre norte magnético y geográfico}
+    \caption[Diferencia entre norte magnético y geográfico.]{Diferencia entre norte magnético y geográfico.\footnotemark}
     \label{fig:magnetic-geographic-north}
 \end{figure}
+\footnotetext{\url{https://commons.wikimedia.org/wiki/File:XYZ-DIS_magnetic_field_coordinates.svg}}
 
 Con ArduPilot recibiendo las lecturas de sensores de la manera esperada se logra observar correctamente el estado de la aeronave en Mission Planner, además el filtro de Kalman incluido en el autopiloto logra realizar la estimación de actitud exitosamente como se observa en \cref{fig:mission-planner-ok1}.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\textwidth]{mission-planner-ok1.png}
-    \caption{Aeronave en Mission Planner}
+    \caption{Aeronave en Mission Planner.}
     \label{fig:mission-planner-ok1}
 \end{figure}
 
-La estructura de datos que describe la posición y actitud de la aeronave incluye varias de las mismas variables que se entregan como lecturas de sensor, las excepciones son el cuaternión \texttt{quat} que describe la orientación y la posición \texttt{origin} que indica la posición inicial de la aeronave (antes de iniciar un despegue o una misión automatizada). La importante es el cuaternión el cual se obtiene directamente de X-Plane que de utilizarse permite omitir la necesidad de estimar la variable. Esta opción se puede activar modificando el parámetro \texttt{AHRS\_EKF\_TYPE} en Mission Planner como se ve en \cref{fig:missionplanner-params-ekf} seleccionando ``ExternalAHRS'', a diferencia de ``Enable EKF3'' que activa el filtro de Kalman del autopiloto recibiendo de X-Plane solo lecturas de sensor.
+La estructura de datos que describe la posición y actitud de la aeronave incluye varias de las mismas variables que se entregan como lecturas de sensor. Las excepciones son el cuaternión \texttt{quat} que describe la orientación y la posición \texttt{origin} que indica la posición inicial de la aeronave (antes de iniciar un despegue o una misión automatizada). La importante es el cuaternión el cual se obtiene directamente de X-Plane que de utilizarse permite omitir la necesidad de estimar la variable. Esta opción se puede activar modificando el parámetro \texttt{AHRS\_EKF\_TYPE} en Mission Planner como se ve en \cref{fig:missionplanner-params-ekf} seleccionando ``ExternalAHRS'', a diferencia de ``Enable EKF3'' que activa el filtro de Kalman del autopiloto recibiendo de X-Plane solo lecturas de sensor.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{missionplanner-params-ekf.png}
-    \caption{Configuración de estimación de posición y actitud en Mission Planner}
+    \caption{Configuración de estimación de posición y actitud en Mission Planner.}
     \label{fig:missionplanner-params-ekf}
 \end{figure}
 
@@ -392,7 +396,7 @@ Con estos cambios el autopiloto ya es capaz de controlar las superficies de cont
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.35\textwidth]{arduplane-not-calibrated.png}
-    \caption{Chequeos de prearmado}
+    \caption{Chequeos de prearmado.}
     \label{fig:arduplane-not-calibrated}
 \end{figure}
 
@@ -405,21 +409,21 @@ Para el acelerómetro en la pestaña ``Accel Calibration'' se muestran instrucci
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.52\textwidth]{ap-cal.png}
-    \caption{Instrucciones de calibración de acelerómetro}
+    \caption{Instrucciones de calibración de acelerómetro.}
     \label{fig:ap-cal}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{xplane-cal-level.png}
-    \caption{Aeronave en calibración nivelada}
+    \caption{Aeronave en calibración nivelada.}
     \label{fig:xplane-cal-level}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{xplane-cal-left.png}
-    \caption{Aeronave en calibración inclinada a la izquierda}
+    \caption{Aeronave en calibración inclinada a la izquierda.}
     \label{fig:xplane-cal-left}
 \end{figure}
 
@@ -448,7 +452,7 @@ La calibración del magnetómetro es similar, se debe orientar la aeronave de la
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{ap-cal-compass.png}
-    \caption{Calibración de magnetómetro completa en Mission Planner}
+    \caption{Calibración de magnetómetro completa en Mission Planner.}
     \label{fig:ap-cal-compass}
 \end{figure}
 
@@ -461,14 +465,14 @@ Conectando un receptor de radio al puerto correspondiente en el Pixhawk 4 se pru
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.4\textwidth]{setup.jpeg}
-    \caption{Vuelo con radio en X-Plane 9}
+    \caption{Vuelo con radio en X-Plane 9.}
     \label{fig:setup}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{xplane-rc.png}
-    \caption{Aeronave RC en misión autónoma en X-Plane 9}
+    \caption{Aeronave RC en misión autónoma en X-Plane 9.}
     \label{fig:xplane-rc}
 \end{figure}
 
@@ -479,7 +483,7 @@ Otra prueba fue compilar el plug-in para versiones más actualizadas de X-Plane 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{xplane11.png}
-    \caption{Plug-in funcionando en X-Plane 11}
+    \caption{Plug-in funcionando en X-Plane 11.}
     \label{fig:xplane11}
 \end{figure}
 
@@ -495,4 +499,18 @@ Al seleccionar un nuevo aeropuerto, cambiar la aeronave o luego de un choque fat
 
 \subsection{Puesta en marcha}
 
-La primera versión del entorno de desarrollo compuesto por el plug-in y driver cumple para continuar pruebas de modificaciones posteriores que se hagan en ArduPilot y también promete ser una gran herramienta de aprendizaje en el funcionamiento de un autopiloto y el uso de Mission Planner. Poner en marcha el entorno en un computador que no sea el de desarrollo consiste en descargar el plug-in para X-Plane desde el repositorio en GitHub \cite{xplane-hitl-plugin} y descargar el firmware del autopiloto que se tenga disponible también en el repositorio correspondiente \cite{ap-hitl-fork} para programarlo con Mission Planner.
+La primera versión del entorno de desarrollo compuesto por el plug-in y driver cumple para continuar pruebas de modificaciones posteriores que se hagan en ArduPilot y también promete ser una gran herramienta de aprendizaje en el funcionamiento de un autopiloto y el uso de Mission Planner. Poner en marcha el entorno en un computador que no sea el de desarrollo consiste en descargar el plug-in para X-Plane desde el repositorio en GitHub \cite{xplane-hitl-plugin} y descargar el firmware del autopiloto que se tenga disponible también en el repositorio correspondiente \cite{ap-hitl-fork} para programarlo con Mission Planner. Se han subido a ambos repositorios las instrucciones básicas para configurar el entorno de desarrollo como se observa en \cref{fig:repo-ap,fig:repo-plugin}, equivalentes a los pasos descritos durante el desarrollo del capítulo.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{repo-ap.png}
+    \caption{Instrucciones en repositorio de fork de ArduPilot.}
+    \label{fig:repo-ap}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{repo-plugin.png}
+    \caption{Instrucciones en repositorio de plug-in para X-Plane.}
+    \label{fig:repo-plugin}
+\end{figure}

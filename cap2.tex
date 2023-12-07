@@ -26,8 +26,38 @@ Esta arquitectura modular que tiene ArduPilot es conveniente para el proyecto, y
 
 Laminar Research, el desarrollador del simulador de aeronaves X-Plane ofrece un kit de librerías para el desarrollo de plug-ins muy completo \cite{xplane-sdk}. La librería está diseñada para ser enlazada a proyectos escritos en C++ estableciendo en el compilador la ubicación de los archivos ``header'' para tener una descripción de las funciones disponibles en el editor y la ubicación de una versión compilada de la librería. La SDK es muy completa permitiendo hacer cualquier cosa con la simulación, si se tiene experiencia en desarrollo de videojuegos las funciones que entregan las librerías serán familiares.
 
+Los plug-ins para el simulador de vuelo son fundamentales para muchos usuarios, las cabinas realistas con instrumentación física y otras características inmersivas se sostienen sobre plug-ins para comunicarse con hardware externo. Existen además plug-ins de venta comercial que agregan funciones que Laminar Research quizá no tiene intención de agregar pues está fuera del alcance de X-Plane, pero que algunos usuarios están dispuestos a pagar por su función.
+
 La SDK se puede configurar al momento de la compilación para establecer la versión mínima de X-Plane para la que se quiere exportar el plug-in, las versiones nuevas de X-Plane son retrocompatibles con plug-ins creados para versiones anteriores. Naturalmente, si se desea hacer uso de una función introducida en las versiones más actuales el plug-in no podrá funcionar en los X-Plane antiguos. En la documentación de la SDK está bien definida en que versión se introdujo cada función.
 
 Otra consideración es que X-Plane 9, el simulador utilizado actualmente en el laboratorio de técnicas aeroespaciales, es exclusivamente de 32-bit. Y las versiones de X-Plane desde la 10 son de 64-bit. Para el desarrollo de plug-ins se debe definir la arquitectura de bits al momento de compilar, por lo que si se quiere crear un plug-in compatible con la mayor cantidad de versiones posible se debe definir una versión de X-Plane antigua, y compilar para 32 y 64 bits.
 
 \section{Estado del arte}
+
+\subsection{Simulación conectada a ArduPilot}
+
+ArduPilot está programado para ser compatible con una amplia variedad de microcontroladores. Una consecuencia de esto es que también se puede compilar para ser ejecutado en un computador convencional, de manera paralela con un simulador de vuelo \cite{ardupilot-sitl}. Esto ha llevado al desarrollo de una versión de ArduPilot dedicada para realizar pruebas con la técnica ``Software-in-the-Loop'', con toda la infraestructura siendo ejecutada en el mismo computador.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{sitl.jpg}
+    \caption[ArduPilot ejecutando pruebas SITL.]{ArduPilot ejecutando pruebas SITL.\footnotemark}
+    \label{fig:sitl}
+\end{figure}
+\footnotetext{\url{https://ardupilot.org/dev/docs/sitl-simulator-software-in-the-loop.html}}
+
+Una limitación importante de esta solución es que el código no está corriendo en un autopiloto, por lo que se hace más complicado validar que los cambios que se hagan a ArduPilot funcionarían en uno. Para resolver este problema se ofrece de manera alternativa ejecutar una simulación (menos fiel a la realidad) dentro del mismo autopiloto \cite{sim-on-hardware}. Pero esto se ve evidentemente limitado por la capacidad de procesamiento del hardware autopiloto, el que se ve estresado por estar corriendo una simulación completa por sobre la programación convencional, además no ofrece una visualización en tiempo real además de la telemetría de Mission Planner.
+
+\subsection{Hardware-in-the-Loop en PX4}
+
+El software autopiloto PX4 ofrece un modo de simulación para realizar pruebas ``Hardware-in-the-Loop'' que es desarrollado por la comunidad \cite{px4-hitl}. Esta función está integrada en el firmware sin necesidad de hacer grandes cambios, en el programa de estación en tierra QGroundControl se debe activar la opción ``HITL'' y establecer algunos parámetros.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{px4-hitl.png}
+    \caption[Configurando modo HITL en QGroundControl.]{Configurando modo HITL en QGroundControl.\footnotemark}
+    \label{fig:px4-hitl}
+\end{figure}
+\footnotetext{\url{https://docs.px4.io/main/en/simulation/hitl.html}}
+
+Según la documentación de esta función, el modo HITL es compatible con los simuladores ``FlightGear'', ``JSBSim'' y ``AirSim'', además de ofrecer la misma opción de ArduPilot de ejecutar una simulación simplificada en el mismo autopiloto en paralelo con el programa normal.
