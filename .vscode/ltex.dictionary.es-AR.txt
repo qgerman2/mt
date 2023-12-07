@@ -60,3 +60,12 @@ PID
 SITL
 teletransportar
 teletransporte
+roll
+pitch
+yaw
+ArduCopter
+ArduRover
+Research
+retrocompatible
+header
+retrocompatibles
